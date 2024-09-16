@@ -1,5 +1,5 @@
 package main;
-
+import java.io.*;
 import linear.LinearEq;
 import matrix.MatrixOp;
 import java.util.Scanner;
@@ -15,13 +15,15 @@ public class Main {
           choice = scanner.nextLine().toLowerCase(); 
           switch (choice) {
             case "matrix":
-            	MatrixOp.readMatrixFromFile();
             	while (true) {
             		System.out.print("Enter command for Matrices: ");
             		String command = scanner.nextLine().trim();
             		if (command.equalsIgnoreCase("exit")) {
+            			String filepath = System.getProperty("user.home") + File.separator + "matrices.txt";
+                		MatrixOp.clearFile(filepath);
             			break;
             			}
+            		
             		MatrixOp.executeCommand(command, scanner);
             		}
             	break;
@@ -36,12 +38,16 @@ public class Main {
             		}
             	break;
             case "tensor":
+            	
             	while (true) {
             		System.out.print("Enter command for Tensors: ");
             		String command = scanner.nextLine().trim();
             		if (command.equalsIgnoreCase("exit")) {
+            			String filepath = System.getProperty("user.home") + File.separator + "tensor.txt";
+                		TensorOp.clearFile(filepath);
             			break;
             			}
+            		
             		TensorOp.executeCommand(command,scanner);
             		}
             	break;
@@ -52,4 +58,6 @@ public class Main {
   } while (!choice.equals("exit"));
         scanner.close();
     }
+    
+
 }
