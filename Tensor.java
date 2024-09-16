@@ -105,8 +105,11 @@ public class Tensor {
                 for (int k = 0; k < cols; k++) {
                     for (int l = 0; l < tensor1.cols; l++) {
                         result.data[i][j][k] += tensor1.data[i][j][l] * tensor2.data[i][l][k];
+                        System.out.print("(" + tensor1.data[i][j][l] + "*" + tensor2.data[i][l][k]+")" + " + ");
                     }
+                    System.out.print("\t");
                 }
+                System.out.println();
             }
         }
 
