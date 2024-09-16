@@ -3,8 +3,8 @@ package matrix;
 import java.io.*;
 import java.util.*;
 public class MatrixOp {
-    private static final String filepath = "C:\\Users\\HP\\eclipse-workspace\\MatrixIT\\src\\matrices.txt";
-
+    private static final String filepath = System.getProperty("user.home") + File.separator + "matrices.txt";
+    
     public static void readMatrixFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
             String line;
@@ -15,6 +15,7 @@ public class MatrixOp {
             System.err.println("IOException occurred: " + e.getMessage());
             e.printStackTrace();
         }
+        
     }
 
     public static void executeCommand(String command,Scanner scanner) {
@@ -343,4 +344,15 @@ public class MatrixOp {
         }
         return null;
     }
+    
+    public static void clearFile(String filepath) {
+    	try (FileOutputStream fos = new FileOutputStream(filepath)) {
+            System.out.println("File cleared successfully.");
+        } catch (IOException e) {
+            System.err.println("Error clearing file: " + e.getMessage());
+        }
+    }  
+
+    
+    
 }
