@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 public class TensorOp {
-    private static final String filepath = "C:\\Users\\HP\\eclipse-workspace\\MatrixIT\\src\\tensor.txt";
+    private static final String filepath = System.getProperty("user.home") + File.separator + "tensor.txt";
 
     public static void main(String[] args) {
         readTensorFromFile();
@@ -20,7 +20,7 @@ public class TensorOp {
             System.err.println("IOException occurred: " + e.getMessage());
             e.printStackTrace();
         }
-    }
+        }
 
     public static void executeCommand(String command, Scanner scanner) {
         if (command.contains("=")) {
@@ -51,8 +51,10 @@ public class TensorOp {
             inquireDimensionalStride(command);
         } else if (command.startsWith("slice(") && command.endsWith(")")) {
             sliceTensors(command,scanner);
-        } else if (command.startsWith("slice(") && command.endsWith(")")) {
+        } else if (command.startsWith("dot(") && command.endsWith(")")) {
             dotTensors(command);
+        } else if (command.startsWith("hel") && command.endsWith("p")) {
+            printHelp (command);
         } else {
             System.out.println("Unknown command: " + command);
         }
@@ -92,6 +94,25 @@ public class TensorOp {
             System.err.println("An error occurred while reshaping tensor: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+    private static void printHelp(String command) {
+    	System.out.println("Create tensor---- name= [ a00 a01 a02....a0n ,..., an0 an1 an2 ann..;...;b00 b01 b02....b0n ,..., bn0 bn1 bn2 bnn..]");
+    	System.out.println();
+    	System.out.println("Addition           = add(Tensor A, Tensor B)");
+    	System.out.println("Subtraction        = sub(Tensor A, Tensor B) || Note:Tensor B to be subtracted from A");
+    	System.out.println("Multiplication     = mul(Tensor A, Tensor B) || Note:A*B not B*A");
+    	System.out.println("Division           = div(Tensor A, Tensor B)");
+    	System.out.println("Scalar Addition    = sadd(Tensor name, Scalar Quantity)");
+    	System.out.println("Scalar Subtraction    = ssub(Tensor name, Scalar Quantity)");
+    	System.out.println("Scalar Multiplication = smul(Tensor name, Scalar Quantity)");
+    	System.out.println("Scalar Division       = sdiv(Tensor name, Scalar Quantity)");
+    	System.out.println("Transpose             = trans(Tensor name)");
+    	System.out.println("Reshaping          =(Tensor name, New depth, New Row, New Column)");
+    	System.out.println("Dimensional Stride =str(Tensor Name)");
+    	System.out.println("Dimension          =dim(Tensor Name)");
+    	System.out.println("Slicing Tensors    =slice(Tensor Name)");
+    	System.out.println("Dot product        =dot(Tensor A, Tensor B)");
+    	System.out.println();
     }
     private static void inquireDimension(String command) {
     	try {
@@ -238,7 +259,7 @@ public class TensorOp {
                 System.out.println("One or both tensor names are not recognized");
             }
         } catch (Exception e) {
-            System.err.println("An error occurred while subtracting tensors: " + e.getMessage());
+            System.err.println("An error occurred while doing dot product tensors: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -366,4 +387,16 @@ public class TensorOp {
         }
         return null;
     }
+    
+    public static void clearFile(String filepath) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filepath))) {
+            bw.write("");
+            System.out.println("Thank you for choosing MatrixIT :)");
+        } catch (IOException e) {
+            System.err.println("IOException occurred while clearing the file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    
 }
