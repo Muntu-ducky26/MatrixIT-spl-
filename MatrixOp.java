@@ -3,7 +3,8 @@ package matrix;
 import java.io.*;
 import java.util.*;
 public class MatrixOp {
-    private static final String filepath = System.getProperty("user.home") + File.separator + "matrices.txt";
+//    private static final String filepath = System.getProperty("user.home") + File.separator + "matrices.txt";
+	private static final String filepath = "C:\\Users\\HP\\eclipse-workspace\\MatrixIT\\src\\variables.txt";
     
     public static void readMatrixFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
