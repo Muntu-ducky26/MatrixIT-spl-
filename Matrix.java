@@ -230,6 +230,7 @@ public class Matrix {
     
     
     public static int rank(Matrix matrix) {
+    	System.out.println("Calculating rank of the matrix...");
         Matrix echelonMatrix = toRowEchelonForm(matrix);
         int rank = 0;
         for (int i = 0; i < echelonMatrix.rows; i++) {
@@ -244,9 +245,13 @@ public class Matrix {
                 rank++;
             }
         }
+        System.out.println("Row echelon form of the matrix:");
+        echelonMatrix.print();
+        System.out.println("Rank of the matrix: " + rank);
         return rank;
     }
     public static Matrix toRowEchelonForm(Matrix matrix) {
+    	System.out.println("Converting matrix to row echelon form...");
         int rows = matrix.rows;
         int cols = matrix.cols;
         Matrix echelonMatrix = new Matrix(rows, cols);
@@ -273,9 +278,14 @@ public class Matrix {
                     }
                 }
             }
-            swapRows(echelonMatrix, i, r);
+            if (i != r) {
+                System.out.println("Swapping rows " + (i + 1) + " and " + (r + 1));
+                swapRows(echelonMatrix, i, r);
+                echelonMatrix.print();
+            }
             if (echelonMatrix.data[r][lead] != 0) {
                 double lv = echelonMatrix.data[r][lead];
+                System.out.println("Normalizing row " + (r + 1) + " by dividing by " + lv);
                 for (int j = 0; j < cols; j++) {
                     echelonMatrix.data[r][j] /= lv;
                 }
@@ -283,6 +293,7 @@ public class Matrix {
             for (int i2 = 0; i2 < rows; i2++) {
                 if (i2 != r) {
                     double lv = echelonMatrix.data[i2][lead];
+                    System.out.println("Eliminating element at row " + (i2 + 1) + ", column " + (lead + 1));
                     for (int j = 0; j < cols; j++) {
                         echelonMatrix.data[i2][j] -= lv * echelonMatrix.data[r][j];
                     }
@@ -295,6 +306,7 @@ public class Matrix {
 
     // Method to swap two rows in a matrix
     private static void swapRows(Matrix matrix, int row1, int row2) {
+    	System.out.println("Swapping rows: " + (row1 + 1) + " and " + (row2 + 1));
         double[] temp = matrix.data[row1];
         matrix.data[row1] = matrix.data[row2];
         matrix.data[row2] = temp;
@@ -303,51 +315,68 @@ public class Matrix {
     
     
     public static double[] matrixVectorMultiply(Matrix matrix, double[] vector) {
+    	System.out.println("Performing matrix-vector multiplication...");
         int n = matrix.rows;
         double[] result = new double[n];
         for (int i = 0; i < n; i++) {
             result[i] = 0;
             for (int j = 0; j < n; j++) {
+            	System.out.printf("Adding %f * %f\n", matrix.data[i][j], vector[j]);
                 result[i] += matrix.data[i][j] * vector[j];
             }
+            System.out.printf("Row %d result: %f\n", i + 1, result[i]);
         }
         return result;
     }
     public static double vectorNorm(double[] vector) {
+    	System.out.println("Calculating vector norm...");
         double sum = 0;
         for (double v : vector) {
+        	System.out.printf("Adding square of %f\n", v);
             sum += v * v;
         }
-        return Math.sqrt(sum);
+        double norm = Math.sqrt(sum);
+        System.out.printf("Norm of the vector: %f\n", norm);
+        return norm;
     }
     public static double[] normalizeVector(double[] vector) {
+    	System.out.println("Normalizing vector...");
         double norm = vectorNorm(vector);//root of square of values of vector or scalar value
         int n = vector.length;
         double[] normalizedVector = new double[n];
         for (int i = 0; i < n; i++) {
             normalizedVector[i] = vector[i] / norm;//dividing by absolute value
+            System.out.printf("Normalized element %d: %f\n", i + 1, normalizedVector[i]);
         }
         return normalizedVector;
     }
     public static double powerIteration(Matrix matrix, double[] initialVector, int maxIterations, double tolerance) {
+        System.out.println("Performing power iteration to calculate the dominant eigenvalue...");
         double[] b = initialVector;
         double eigenvalue = 0;
+
         for (int i = 0; i < maxIterations; i++) {
+            System.out.println("Iteration " + (i + 1) + ":");
             double[] bNext = matrixVectorMultiply(matrix, b);
-            bNext = normalizeVector(bNext); //storing next vector for iteration
+            bNext = normalizeVector(bNext);
 
             double newEigenvalue = 0;
             for (int j = 0; j < matrix.rows; j++) {
                 newEigenvalue += bNext[j] * matrixVectorMultiply(matrix, bNext)[j];
             }
 
+            System.out.printf("Calculated eigenvalue: %f\n", newEigenvalue);
             if (Math.abs(newEigenvalue - eigenvalue) < tolerance) {
+                System.out.println("Convergence achieved.");
                 eigenvalue = newEigenvalue;
                 break;
             }
+
             eigenvalue = newEigenvalue;
             b = bNext;
         }
+
+        System.out.printf("Dominant eigenvalue: %f\n", eigenvalue);
         return eigenvalue;
     }
     
