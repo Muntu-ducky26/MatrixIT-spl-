@@ -4,6 +4,11 @@ public class Matrix {
     double[][] data;
     int rows, cols;
 
+    public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_RED  = "\u001B[31m";
+	public static final String ANSI_BLUE  = "\u001B[34m";
+	public static final String ANSI_GREEN  = "\u001B[32m";
+    
     public Matrix(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
@@ -72,7 +77,7 @@ public class Matrix {
     
     public static Matrix extractMatrix(Matrix matrix, int numRows, int numCols, int startRow, int startCol) {
         if (startRow + numRows > matrix.rows || startCol + numCols > matrix.cols) {
-            throw new IllegalArgumentException("Submatrix dimensions exceed original matrix dimensions.");
+            throw new IllegalArgumentException(ANSI_RED+"Submatrix dimensions exceed original matrix dimensions."+ANSI_RESET);
         }
 
         Matrix subMatrix = new Matrix(numRows, numCols);
@@ -85,7 +90,7 @@ public class Matrix {
     }
     public static Matrix subMatrices(Matrix matrix1, Matrix matrix2) {
     	if(matrix1.rows!=matrix2.rows || matrix2.cols!=matrix1.cols) {
-    		throw new IllegalArgumentException("Dimensions doesn't match!");
+    		throw new IllegalArgumentException(ANSI_RED+"Dimensions doesn't match!"+ANSI_RESET);
     	}
     	
         Matrix sub = new Matrix(matrix1.rows,matrix1.cols);
@@ -102,7 +107,7 @@ public class Matrix {
     
     public static Matrix addMatrices(Matrix matrix1, Matrix matrix2) {
     	if(matrix1.rows!=matrix2.rows || matrix2.cols!=matrix1.cols) {
-    		throw new IllegalArgumentException("Dimensions doesn't match!");
+    		throw new IllegalArgumentException(ANSI_RED+"Dimensions doesn't match!"+ANSI_RESET);
     	}
     	
         Matrix add = new Matrix(matrix1.rows,matrix1.cols);
@@ -121,7 +126,7 @@ public class Matrix {
         Matrix inverse = new Matrix(n,n);
         double det = determinant(matrix);
         if (det == 0) {
-            throw new ArithmeticException("Matrix is singular and cannot be inverted.");//singular matrix have determinant zero and we can't divide by zero
+            throw new ArithmeticException(ANSI_RED+"Matrix is singular and cannot be inverted."+ANSI_RESET);//singular matrix have determinant zero and we can't divide by zero
         }
      
         Matrix minors = matrixOfMinors(matrix);
@@ -176,11 +181,12 @@ public class Matrix {
         return det;
     }
     public static Matrix transpose(Matrix matrix) {
-        int n = matrix.rows;
-        Matrix transposed = new Matrix(n,n);
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                transposed.data[i][j] = matrix.data[j][i];//exchanging rows and columns
+        int n1 = matrix.rows;
+        int n2= matrix.cols;
+        Matrix transposed = new Matrix(n2,n1);
+        for (int i = 0; i < n1; i++) {
+            for (int j = 0; j < n2; j++) {
+                transposed.data[j][i] = matrix.data[i][j];//exchanging rows and columns
             }
         }
         return transposed;
@@ -354,7 +360,6 @@ public class Matrix {
             System.out.println();
         }
     }
-
     public static Matrix fromString(String matrixData) {
         String[] rows = matrixData.split(";");
         int rowCount = rows.length;
