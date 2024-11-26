@@ -2,9 +2,14 @@ package matrix;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 public class MatrixOp {
-//    private static final String filepath = System.getProperty("user.home") + File.separator + "matrices.txt";
-	private static final String filepath = "C:\\Users\\HP\\eclipse-workspace\\MatrixIT\\src\\variables.txt";
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_RED  = "\u001B[31m";
+	public static final String ANSI_BLUE  = "\u001B[34m";
+	public static final String ANSI_GREEN  = "\u001B[32m";
+    private static final String filepath = System.getProperty("user.home") + File.separator + "variablesm.txt";
+    private static final String helppath = "C:\\Users\\HP\\eclipse-workspace\\MatrixIT\\src\\helpm.txt";
     
     public static void readMatrixFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
@@ -18,39 +23,62 @@ public class MatrixOp {
         }
         
     }
+    
+    
 
     public static void executeCommand(String command,Scanner scanner) {
-        if (command.contains("=")) {
+    	String s = "[a-zA-z]+ *= *\\[ *[0-9 ]+;[0-9 ]+\\]";
+    	String sqr="sqr +[a-zA-Z]+";
+    	String add="add +[a-zA-z]+ +[a-zA-Z]+";
+    	String sub="sub +[a-zA-z]+ +[a-zA-Z]+";
+    	String mul="mul +[a-zA-z]+ +[a-zA-Z]+";
+    	String inv="inv +[a-zA-Z]+";
+    	String extsub="extsub +[a-zA-Z]+";
+    	String det="det +[a-zA-Z]+";
+    	String rank="rank +[a-zA-Z]+";
+    	String RE="RE +[a-zA-Z]+";
+    	String trans="trans +[a-zA-Z]+";
+    	String calsprs="calsprs +[a-zA-Z]+";
+    	String eig="eig +[a-zA-Z]+";
+    	String c="[a-zA-Z]+";
+        if (Pattern.matches(s, command)) {
             createMatrix(command);
-        } else if (command.startsWith("sqrt(") && command.endsWith(")")) {
+        }else if (Pattern.matches(sqr, command) ) {
             squareMatrix(command);
-        } else if (command.startsWith("mul(") && command.endsWith(")")) {
+        } else if (Pattern.matches(mul, command)) {
             multiplyMatrices(command);
-        } else if (command.startsWith("calsprs(") && command.endsWith(")")) {
+        } else if (Pattern.matches(calsprs, command)) {
         	calculateSparsity(command);
-        } else if (command.startsWith("extsub(") && command.endsWith(")")) {
+        } else if (Pattern.matches(extsub, command)) {
         	extractSub(command,scanner);
-        } else if (command.startsWith("sub(") && command.endsWith(")")) {
+        } else if (Pattern.matches(sub, command)) {
         	subtractMatrices(command);
-        } else if (command.startsWith("add(") && command.endsWith(")")) {
+        } else if (Pattern.matches(add, command)) {
         	additionMatrices(command);
-        } else if (command.startsWith("det(") && command.endsWith(")")) {
+        } else if (Pattern.matches(det, command)) {
         	calculateDeterminant(command);
-        } else if (command.startsWith("inv(") && command.endsWith(")")) {
+        } else if (Pattern.matches(inv, command)) {
         	calculateInverse(command);
-        } else if (command.startsWith("trans(") && command.endsWith(")")) {
+        } else if (Pattern.matches(trans, command)) {
         	calculateTranspose(command);
-        } else if (command.startsWith("eig(") && command.endsWith(")")) {
+        } else if (Pattern.matches(eig, command)) {
         	calculateEigenvalue(command,scanner);
-        } else if (command.startsWith("RE(") && command.endsWith(")")) {
+        } else if (Pattern.matches(RE, command)) {
         	calculateRowechelon(command);
-        } else if (command.startsWith("rank(") && command.endsWith(")")) {
+        } else if (Pattern.matches(rank, command)) {
         	calculateRank(command);
-        } else if (command.startsWith("hel") && command.endsWith("p")) {
+        } else if(command.startsWith("help")) {
         	printHelp(command);
-        }
-          else {
+        } else if (Pattern.matches(c,command)){
+        	if(!Pattern.matches("help",command)) {
+        		printMatrix(command);
+        	}
+        } else {
             System.out.println("Unknown command: " + command);
+            System.out.println(ANSI_BLUE+"Create matrix---- name= [ a00 a01 a02....a0n ; a10 a11 a12..;...;a0n a1n ....ann]"+ANSI_RESET);
+        	System.out.println(ANSI_RED+"Type help and then any of the following: "+ANSI_RESET);
+        	System.out.println(ANSI_GREEN+"create, add, sub, mul, square, transpose, determinant, \ninverse, sparsity, rank, eigen, row echelon, extract..."+ANSI_RESET);
+            
         }
     }
 
@@ -64,34 +92,51 @@ public class MatrixOp {
             System.out.println("Matrix " + matrixName + " created:");
             matrix.print();
         } catch (Exception e) {
-            System.err.println("An error occurred: " + e.getMessage());
+            System.err.println(ANSI_RED+"An error occurred: " + e.getMessage()+ANSI_RESET);
             e.printStackTrace();
         }
     }
-    
-    private static void printHelp(String command) {
-    	System.out.println("Create matrix---- name= [ a00 a01 a02....a0n ; a10 a11 a12..;...;a0n a1n ....ann]");
-    	System.out.println();
-    	System.out.println("Addition           = add(Matrix A, Matrix B)");
-    	System.out.println("Subtraction        = sub(Matrix A, Matrix B) || Note:Matrix B to be subtracted from A");
-    	System.out.println("Multiplication     = mul(Matrix A, Matrix B) || Note:A*B not B*A");
-    	System.out.println("Square of matrix   = sqrt(Matrix name)");
-    	System.out.println("Transpose          = trans(Matrix name )");
-    	System.out.println("Determinant        = det(Matrix name)");
-    	System.out.println("Inverse matrix     = inv(Matrix name)");
-    	System.out.println("Calculate sparsity = calsprs(Matrix name)");
-    	System.out.println("Rank of matrix     = rank(Matrix name)");
-    	System.out.println("Eigenvalue calculation(Dominant value)= eig(Matrix name)");
-    	System.out.println("Rowchelon form     = RE(matrix name)");
-    	System.out.println("Extract sub matrix = extsub(matrix name)");
-    	System.out.println();
-    	System.out.println();
+    private static void printMatrix(String command) {
+    	String matrixName = command;
+    	Matrix matrix = readMatrixFromFile(matrixName);
+    	if(matrix!=null) {
+    		matrix.print();
+    	}
+    	else {
+    		System.out.println(ANSI_BLUE+"Create matrix---- name= [ a00 a01 a02....a0n ; a10 a11 a12..;...;a0n a1n ....ann]"+ANSI_RESET);
+    		System.out.println("Example:	 b=[1 1; 2 2; 3 3]");
+        	System.out.println(ANSI_RED+"Type help and then any of the following: "+ANSI_RESET);
+        	System.out.println(ANSI_GREEN+"create, add, sub, mul, square, transpose, determinant, inverse, sparsity, rank, eigen, row echelon, extract..."+ANSI_RESET);
+        	
+    	}
     }
+    private static void printHelp(String command) {
+    	String[] parts=command.split(" ",2);
+    	if(parts.length>=2) {
+    	String helpName=parts[1].trim();
+    	String line = readHelpFromFile(helpName);
+    	if(line!=null) {
+    		System.out.println(line);
+    	}
+
+    	else {
+    	System.out.println(ANSI_BLUE+"Create matrix---- name= [ a00 a01 a02....a0n ; a10 a11 a12..;...;a0n a1n ....ann]"+ANSI_RESET);
+    	System.out.println(ANSI_RED+"Type help and then any of the following: "+ANSI_RESET);
+    	System.out.println(ANSI_GREEN+"create, add, sub, mul, square, transpose, determinant, inverse, sparsity, rank, eigen, rowechelon, extract..."+ANSI_RESET);
+    	}
+    	
+    }
+    	else {
+        	System.out.println(ANSI_BLUE+"Create matrix---- name= [ a00 a01 a02....a0n ; a10 a11 a12..;...;a0n a1n ....ann]"+ANSI_RESET);
+        	System.out.println(ANSI_RED+"Type help and then any of the following: "+ANSI_RESET);
+        	System.out.println(ANSI_GREEN+"create, add, sub, mul, square, transpose, determinant, inverse, sparsity, rank, eigen, rowechelon, extract..."+ANSI_RESET);
+        	}
+   }
     
 
     private static void squareMatrix(String command) {
         try {
-            String matrixName = command.substring(5, command.length() - 1).trim();
+            String matrixName = command.substring(4, command.length()).trim();
             Matrix matrix = readMatrixFromFile(matrixName);
             if (matrix != null) {
                 Matrix result = Matrix.multiply(matrix, matrix);
@@ -99,20 +144,20 @@ public class MatrixOp {
                 result.print();
             }
             else {
-                System.out.println(matrixName + " is not recognized");
+                System.out.println(ANSI_RED+matrixName + " is not recognized"+ANSI_RESET);
             }
         } catch (Exception e) {
-            System.err.println("An error occurred: " + e.getMessage());
+            System.err.println(ANSI_RED+"An error occurred: " + e.getMessage()+ANSI_RESET);
             e.printStackTrace();
         }
     }
 
     private static void multiplyMatrices(String command) {
         try {
-            String matrixNamesPart = command.substring(4, command.length() - 1).trim();
-            String[] matrixNames = matrixNamesPart.split(",");
+            String matrixNamesPart = command.substring(4, command.length()).trim();
+            String[] matrixNames = matrixNamesPart.split(" ");
             if (matrixNames.length != 2) {
-                System.out.println("Invalid multiply command format. Use mul(matrix1,matrix2)");
+                System.out.println(ANSI_RED+"Invalid multiply command format. Use mul matrix1 matrix2"+ANSI_RESET);
                 return;
             }
 
@@ -123,7 +168,7 @@ public class MatrixOp {
             Matrix matrix2 = readMatrixFromFile(matrixName2);
 
             if (matrix1 == null || matrix2 == null) {
-                System.out.println("One or both matrices are not recognized");
+                System.out.println(ANSI_RED+"One or both matrices are not recognized"+ANSI_RESET);
                 return;
             }
 
@@ -131,17 +176,17 @@ public class MatrixOp {
             System.out.println("Result of " + matrixName1 + " multiplied by " + matrixName2 + ":");
             result.print();
         } catch (Exception e) {
-            System.err.println("An error occurred: " + e.getMessage());
+            System.err.println(ANSI_RED+"An error occurred: " + e.getMessage()+ANSI_RESET);
             e.printStackTrace();
         }
     }
     
     private static void subtractMatrices(String command) {
         try {
-            String matrixNamesPart = command.substring(4, command.length() - 1).trim();
-            String[] matrixNames = matrixNamesPart.split(",");
+            String matrixNamesPart = command.substring(4, command.length()).trim();
+            String[] matrixNames = matrixNamesPart.split(" ");
             if (matrixNames.length != 2) {
-                System.out.println("Invalid subtraction command format. Use sub(matrix1,matrix2)");
+                System.out.println(ANSI_RED+"Invalid subtraction command format. Use sub matrix1 matrix2"+ANSI_RESET);
                 return;
             }
 
@@ -152,7 +197,7 @@ public class MatrixOp {
             Matrix matrix2 = readMatrixFromFile(matrixName2);
 
             if (matrix1 == null || matrix2 == null) {
-                System.out.println("One or both matrices are not recognized");
+                System.out.println(ANSI_RED+"One or both matrices are not recognized"+ANSI_RESET);
                 return;
             }
 
@@ -167,10 +212,10 @@ public class MatrixOp {
     
     private static void additionMatrices(String command) {
         try {
-            String matrixNamesPart = command.substring(4, command.length() - 1).trim();
-            String[] matrixNames = matrixNamesPart.split(",");
+            String matrixNamesPart = command.substring(4, command.length()).trim();
+            String[] matrixNames = matrixNamesPart.split(" ");
             if (matrixNames.length != 2) {
-                System.out.println("Invalid additon command format. Use add(matrix1,matrix2)");
+                System.out.println(ANSI_RED+"Invalid additon command format. Use add matrix1 matrix2"+ANSI_RESET);
                 return;
             }
 
@@ -181,7 +226,7 @@ public class MatrixOp {
             Matrix matrix2 = readMatrixFromFile(matrixName2);
 
             if (matrix1 == null || matrix2 == null) {
-                System.out.println("One or both matrices are not recognized");
+                System.out.println(ANSI_RED+"One or both matrices are not recognized"+ANSI_RESET);
                 return;
             }
 
@@ -196,7 +241,7 @@ public class MatrixOp {
     
     private static void calculateSparsity(String command) {
     	try {
-    		String matrixName = command.substring(8, command.length() - 1).trim();
+    		String matrixName = command.substring(8, command.length()).trim();
             Matrix matrix = readMatrixFromFile(matrixName);
             double a=Matrix.sparseMatrix(matrix);
             System.out.println("Sparsity of the matrix is : "+ a*100 +"%");
@@ -208,7 +253,7 @@ public class MatrixOp {
     }
     private static void calculateRank(String command) {
     	try {
-    		String matrixName = command.substring(5, command.length() - 1).trim();
+    		String matrixName = command.substring(5, command.length()).trim();
             Matrix matrix = readMatrixFromFile(matrixName);
             int a=Matrix.rank(matrix);
             System.out.println("Rank of the matrix is : "+ a);
@@ -220,7 +265,7 @@ public class MatrixOp {
     }
     private static void calculateEigenvalue(String command,Scanner scanner) {
     	try {
-    		String matrixName = command.substring(4, command.length() - 1).trim();
+    		String matrixName = command.substring(4, command.length()).trim();
             Matrix matrix = readMatrixFromFile(matrixName);
             System.out.println("Enter dimension of matrix: ");
 	        int n=scanner.nextInt();
@@ -242,7 +287,7 @@ public class MatrixOp {
     }
     private static void calculateTranspose(String command) {
     	try {
-    		String matrixName = command.substring(6, command.length() - 1).trim();
+    		String matrixName = command.substring(6, command.length()).trim();
             Matrix matrix = readMatrixFromFile(matrixName);
             Matrix a=Matrix.transpose(matrix);
             System.out.println("Transpose of the matrix is : ");
@@ -255,7 +300,7 @@ public class MatrixOp {
     }
     private static void calculateRowechelon(String command) {
     	try {
-    		String matrixName = command.substring(3, command.length() - 1).trim();
+    		String matrixName = command.substring(3, command.length()).trim();
             Matrix matrix = readMatrixFromFile(matrixName);
             Matrix a=Matrix.toRowEchelonForm(matrix);
             System.out.println("Rowechelon form of the matrix is : ");
@@ -268,7 +313,7 @@ public class MatrixOp {
     }
     private static void calculateDeterminant(String command) {
     	try {
-    		String matrixName = command.substring(4, command.length() - 1).trim();
+    		String matrixName = command.substring(4, command.length()).trim();
             Matrix matrix = readMatrixFromFile(matrixName);
             double a=Matrix.determinant(matrix);
             System.out.println("Determinant of the matrix is : "+ a);
@@ -280,7 +325,7 @@ public class MatrixOp {
     }
     private static void calculateInverse(String command) {
     	try {
-    		String matrixName = command.substring(4, command.length() - 1).trim();
+    		String matrixName = command.substring(4, command.length()).trim();
             Matrix matrix = readMatrixFromFile(matrixName);
             Matrix a=Matrix.invert(matrix);
             System.out.println("Inverse of the matrix is : " );
@@ -293,7 +338,7 @@ public class MatrixOp {
     }
     private static void extractSub(String command,Scanner scanner) {
         try {
-            String matrixName = command.substring(7, command.length() - 1).trim();
+            String matrixName = command.substring(7, command.length()).trim();
             Matrix matrix = readMatrixFromFile(matrixName);
             if (matrix == null) {
                 System.out.println(matrixName + " is not recognized");
@@ -329,7 +374,22 @@ public class MatrixOp {
             bw.newLine();
         }
     }
-    
+    private static String readHelpFromFile(String s) {
+    	try(BufferedReader br = new BufferedReader(new FileReader(helppath))){
+    		String line;
+    		while((line=br.readLine())!=null) {
+    			if (line.startsWith(s)) {
+    				return line;
+    			}
+    		}
+    	}
+    	catch (IOException e) {
+    		System.err.println("IOException occurred: " + e.getMessage());
+            System.out.println("Try Again!");
+            
+    	}
+    	return null;
+    }
     private static Matrix readMatrixFromFile(String matrixName) {
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
             String line;
@@ -341,19 +401,18 @@ public class MatrixOp {
             }
         } catch (IOException e) {
             System.err.println("IOException occurred: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Try Again!");
         }
         return null;
     }
     
     public static void clearFile(String filepath) {
     	try (FileOutputStream fos = new FileOutputStream(filepath)) {
-            System.out.println("File cleared successfully.");
+            System.out.println("Thank you for choosing MatrixIT :)");
+            System.out.println("Enter your choice again or exit to quit:");
+            System.out.println(" m. Matrix \n t. Tensor \n l.Linear\n Or Then Type help");
         } catch (IOException e) {
             System.err.println("Error clearing file: " + e.getMessage());
         }
-    }  
-
-    
-    
+    }     
 }
