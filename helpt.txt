@@ -1,0 +1,15 @@
+create : Create tensor---- name= [ a00 a01 a02....a0n ,..., an0 an1 an2 ann..;...;b00 b01 b02....b0n ,..., bn0 bn1 bn2 bnn..]
+add : Addition           = add Tensor A Tensor B
+sub : Subtraction        = sub Tensor A Tensor B || Note:Tensor B to be subtracted from A
+mul : Multiplication     = mul Tensor A Tensor B || Note:A*B not B*A
+div : Division           = div Tensor A Tensor B
+scalar add : Scalar Addition    = sadd Tensorname ScalarQuantity
+scalar sub : Scalar Subtraction    = ssub TensorName ScalarQuantity
+scalar mul : Scalar Multiplication = smul TensorName ScalarQuantity
+scalar div : Scalar Division       = sdiv TensorName Scalar Quantity
+transpose : Transpose             = trans TensorName
+reshape : Reshaping          =TensorName Newdepth NewRow NewColumn
+dimension : Dimension          =dim TensorName
+stride : Dimensional Stride =str TensorName
+slice : Slicing Tensors    =slice TensorName
+dot : Dot product        =dot TensorA TensorB

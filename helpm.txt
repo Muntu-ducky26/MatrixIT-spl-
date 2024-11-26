@@ -1,0 +1,13 @@
+create : Create matrix---- name= [ a00 a01 a02....a0n ; a10 a11 a12..;...;a0n a1n ....ann] Example: b=[1 1; 2 3;..]
+add : Addition           = add Matrix A Matrix B
+sub : Subtraction        = sub Matrix A Matrix B) || Note:Matrix B to be subtracted from A
+mul : Multiplication     = mul Matrix A Matrix B || Note:A*B not B*A
+square : Square of matrix   = sqrt Matrix name 
+transpose : Transpose          = trans Matrix name
+determinant : Determinant        = det Matrix name
+sparsity: Calculate sparsity = calsprs Matrix name
+rank : Rank of matrix     = rank Matrix name
+eigen : Eigenvalue calculation(Dominant value)= eig Matrix name
+rowechelon : Rowchelon form     = RE Matrix name
+extract : Extract sub matrix = extsub Matrix name
+inverse : Inverse matrix     = inv Matrix name
