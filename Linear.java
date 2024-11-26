@@ -33,6 +33,7 @@ public class Linear {
             
             System.out.println(" Iteration value of c is: "+c);
             System.out.println();
+            if(flag==1000) break;
         }
 
         System.out.printf("%.6f\n",c);
@@ -52,6 +53,7 @@ public class Linear {
             System.out.println();
             x0 = x1;//Replacing values
             x1 = x2;
+            if(flag==1000)break;
         }
 
         System.out.printf("%.6f\n", x1);
@@ -72,6 +74,7 @@ public class Linear {
             System.out.println();
             
             x0 = x1;
+            if(flag==100)break;
         }
         
         System.out.printf("%.6f\n", x0);
@@ -151,8 +154,8 @@ public class Linear {
 
             System.out.println("Iteration value of c is: " + c);
             System.out.println();
+            if(flag==1000)break;
         }
-
         System.out.printf("%.6f\n", c);
     }
     
@@ -235,8 +238,6 @@ public class Linear {
             }
         }
         return true;
-    }
-    
-    
+    }   
     
 }
