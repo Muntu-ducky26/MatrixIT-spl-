@@ -2,9 +2,14 @@ package tensor;
 
 import java.io.*;
 import java.util.*;
-
+import java.util.regex.Pattern;
 public class TensorOp {
-    private static final String filepath = System.getProperty("user.home") + File.separator + "tensor.txt";
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_RED  = "\u001B[31m";
+	public static final String ANSI_BLUE  = "\u001B[34m";
+	public static final String ANSI_GREEN  = "\u001B[32m";
+    private static final String filepath = System.getProperty("user.home") + File.separator + "variablest.txt";
+    private static final String helppath = "C:\\Users\\HP\\eclipse-workspace\\MatrixIT\\src\\helpt.txt";
 
     public static void main(String[] args) {
         readTensorFromFile();
@@ -21,45 +26,84 @@ public class TensorOp {
             e.printStackTrace();
         }
         }
-
+    private static String readHelpFromFile(String s) {
+    	try(BufferedReader br = new BufferedReader(new FileReader(helppath))){
+    		String line;
+    		while((line=br.readLine())!=null) {
+    			if (line.startsWith(s)) {
+    				return line;
+    			}
+    		}
+    	}
+    	catch (IOException e) {
+    		System.err.println("IOException occurred: " + e.getMessage());
+            System.out.println("Try Again!");
+            
+    	}
+    	return null;
+    }
     public static void executeCommand(String command, Scanner scanner) {
-        if (command.contains("=")) {
+    	String s="[a-zA-Z]+ *= *\\[ *([[0-9]+, *[0-9]+ *]+;?)+ *\\]";
+    	String add="add +[a-zA-z]+ +[a-zA-Z]+";
+    	String sub="sub +[a-zA-z]+ +[a-zA-Z]+";
+    	String mul="mul +[a-zA-z]+ +[a-zA-Z]+";
+    	String div="div +[a-zA-z]+ +[a-zA-Z]+";
+    	String sadd="sadd +[a-zA-z]+ +[0-9]+";
+    	String ssub="ssub +[a-zA-z]+ +[0-9]+";
+    	String smul="smul +[a-zA-z]+ +[0-9]+";
+    	String sdiv="sdiv +[a-zA-z]+ +[0-9]+";
+    	String dot="dot +[a-zA-z]+ +[a-zA-Z]+";
+    	String slice="slice +[a-zA-Z]+";
+    	String str="str +[a-zA-Z]+";
+    	String dim="dim +[a-zA-Z]+";
+    	String trans="trans +[a-zA-Z]+";
+    	String reshape="reshape +[a-zA-z]+ +[0-9]+ +[0-9]+ +[0-9]+";
+    	String c="[a-zA-Z]+";
+        if (Pattern.matches(s,command)) {
             createTensor(command);
-        } else if (command.startsWith("reshape(") && command.endsWith(")")) {
+        } else if (Pattern.matches(reshape,command)) {
             reshapingTensor(command);
-        } else if (command.startsWith("trans(") && command.endsWith(")")) {
+        } else if (Pattern.matches(trans,command)) {
             transTensor(command);
-        } else if (command.startsWith("add(") && command.endsWith(")")) {
+        } else if (Pattern.matches(add,command)) {
             addTensors(command);
-        } else if (command.startsWith("sub(") && command.endsWith(")")) {
+        } else if (Pattern.matches(sub,command)) {
             subtractTensors(command);
-        } else if (command.startsWith("mul(") && command.endsWith(")")) {
+        } else if (Pattern.matches(mul,command)) {
             multiplyTensors(command);
-        } else if (command.startsWith("div(") && command.endsWith(")")) {
+        } else if (Pattern.matches(div,command)) {
             divideTensors(command);
-        } else if (command.startsWith("sadd(") && command.endsWith(")")) {
+        } else if (Pattern.matches(sadd,command)) {
             scalarAddition(command);
-        } else if (command.startsWith("ssub(") && command.endsWith(")")) {
+        } else if (Pattern.matches(ssub,command)) {
             scalarSubtraction(command);
-        } else if (command.startsWith("smul(") && command.endsWith(")")) {
+        } else if (Pattern.matches(smul,command)) {
             scalarMultiplication(command);
-        } else if (command.startsWith("sdiv(") && command.endsWith(")")) {
+        } else if (Pattern.matches(sdiv,command)) {
             scalarDivision(command);
-        } else if (command.startsWith("dim(") && command.endsWith(")")) {
+        } else if (Pattern.matches(dim,command)) {
             inquireDimension(command);
-        } else if (command.startsWith("str(") && command.endsWith(")")) {
+        } else if (Pattern.matches(str,command)) {
             inquireDimensionalStride(command);
-        } else if (command.startsWith("slice(") && command.endsWith(")")) {
+        } else if (Pattern.matches(slice,command) ) {
             sliceTensors(command,scanner);
-        } else if (command.startsWith("dot(") && command.endsWith(")")) {
+        } else if (Pattern.matches(dot,command)) {
             dotTensors(command);
-        } else if (command.startsWith("hel") && command.endsWith("p")) {
-            printHelp (command);
+        } else if(command.startsWith("help")) {
+        	printHelp(command);
+        } else if (Pattern.matches(c,command)){
+        	if(!Pattern.matches("help",command)) {
+        		printTen(command);
+        }
+        } else if(!Pattern.matches(s,command)) {
+        	System.out.println("Create tensor---- name= [ a00 a01 a02....a0n ,..., an0 an1 an2 ann..;...;b00 b01 b02....b0n ,..., bn0 bn1 bn2 bnn..]");
+        	System.out.println("b=[1 2 3, 2 3 1; 1 1 1, 2 2 2] \n'Write your desired numbers'");
         } else {
             System.out.println("Unknown command: " + command);
+            System.out.println("Type help and any of the following:\\ncreate, add, mul, div, scalar add, scalar div, scalar add,\\ntranspose, stride, dimension, slice, dot");
         }
     }
-
+    
     private static void createTensor(String command) {
         try {
             String[] parts = command.split("=", 2);
@@ -71,13 +115,14 @@ public class TensorOp {
             tensor.print();
         } catch (Exception e) {
             System.err.println("An error occurred while creating tensor: " + e.getMessage());
-            e.printStackTrace();
+        	System.out.println("Create tensor---- name= [ a00 a01 a02....a0n ,..., an0 an1 an2 ann..;...;b00 b01 b02....b0n ,..., bn0 bn1 bn2 bnn..]");
+        	System.out.println("b=[1 2 3, 2 3 1; 1 1 1, 2 2 2] \n'Write your desired numbers'");
         }
     }
 
     private static void reshapingTensor(String command) {
         try {
-            String[] parts = command.substring(8, command.length() - 1).split(",");
+            String[] parts = command.substring(8, command.length()).split(" ");
             String tensorName = parts[0].trim();
             int newDepth = Integer.parseInt(parts[1].trim());
             int newRows = Integer.parseInt(parts[2].trim());
@@ -93,30 +138,12 @@ public class TensorOp {
         } catch (Exception e) {
             System.err.println("An error occurred while reshaping tensor: " + e.getMessage());
             e.printStackTrace();
+            System.out.println("Enter reshape TensorA TensorB TensorC \nAxBxC should be equal to previous dimensional product");
         }
-    }
-    private static void printHelp(String command) {
-    	System.out.println("Create tensor---- name= [ a00 a01 a02....a0n ,..., an0 an1 an2 ann..;...;b00 b01 b02....b0n ,..., bn0 bn1 bn2 bnn..]");
-    	System.out.println();
-    	System.out.println("Addition           = add(Tensor A, Tensor B)");
-    	System.out.println("Subtraction        = sub(Tensor A, Tensor B) || Note:Tensor B to be subtracted from A");
-    	System.out.println("Multiplication     = mul(Tensor A, Tensor B) || Note:A*B not B*A");
-    	System.out.println("Division           = div(Tensor A, Tensor B)");
-    	System.out.println("Scalar Addition    = sadd(Tensor name, Scalar Quantity)");
-    	System.out.println("Scalar Subtraction    = ssub(Tensor name, Scalar Quantity)");
-    	System.out.println("Scalar Multiplication = smul(Tensor name, Scalar Quantity)");
-    	System.out.println("Scalar Division       = sdiv(Tensor name, Scalar Quantity)");
-    	System.out.println("Transpose             = trans(Tensor name)");
-    	System.out.println("Reshaping          =(Tensor name, New depth, New Row, New Column)");
-    	System.out.println("Dimensional Stride =str(Tensor Name)");
-    	System.out.println("Dimension          =dim(Tensor Name)");
-    	System.out.println("Slicing Tensors    =slice(Tensor Name)");
-    	System.out.println("Dot product        =dot(Tensor A, Tensor B)");
-    	System.out.println();
     }
     private static void inquireDimension(String command) {
     	try {
-    		String tensorName= command.substring(4, command.length() -1).trim();
+    		String tensorName= command.substring(4, command.length()).trim();
     		Tensor tensor = readTensorFromFile(tensorName);
             if (tensor != null) {
                 System.out.println("Tensor " + tensorName + " Dimensions are:");
@@ -131,7 +158,7 @@ public class TensorOp {
     }
     private static void sliceTensors(String command, Scanner scanner) {
     	try {
-    		String tensorName= command.substring(6, command.length() -1).trim();
+    		String tensorName= command.substring(6, command.length()).trim();
     		Tensor t = readTensorFromFile(tensorName);
             if (t != null) {
                 System.out.println("Enter the slicing data: ");
@@ -155,9 +182,20 @@ public class TensorOp {
             e.printStackTrace();
         }
     }
+    private static void printTen(String command) {
+    	String name=command;
+    	Tensor t=readTensorFromFile(name);
+    	if(t!=null) { 
+    	t.print();}
+    	else {
+    		System.out.println("Create tensor---- name= [ a00 a01 a02....a0n ,..., an0 an1 an2 ann..;...;b00 b01 b02....b0n ,..., bn0 bn1 bn2 bnn..]");
+    		System.out.println("b=[1 2 3, 2 3 1; 1 1 1, 2 2 2] \n'Write your desired numbers'");
+    		System.out.println("Type help and any of the following:\ncreate, add, mul, div, scalar add, scalar div, scalar add,\ntranspose, stride, dimension, slice, dot");
+    	}
+    }
     private static void inquireDimensionalStride(String command) {
     	try {
-    		String tensorName= command.substring(4, command.length() -1).trim();
+    		String tensorName= command.substring(4, command.length()).trim();
     		Tensor tensor = readTensorFromFile(tensorName);
             if (tensor != null) {
                 System.out.println("Tensor " + tensorName + " Dimensional Stride will be :");
@@ -173,7 +211,7 @@ public class TensorOp {
 
     private static void transTensor(String command) {
         try {
-            String tensorName = command.substring(6, command.length() - 1).trim();
+            String tensorName = command.substring(6, command.length()).trim();
             Tensor tensor = readTensorFromFile(tensorName);
             if (tensor != null) {
                 Tensor T = tensor.transpose();
@@ -190,7 +228,7 @@ public class TensorOp {
 
     private static void addTensors(String command) {
         try {
-            String[] parts = command.substring(4, command.length() - 1).split(",");
+            String[] parts = command.substring(4, command.length()).split(" ");
             String tensorName1 = parts[0].trim();
             String tensorName2 = parts[1].trim();
             Tensor tensor1 = readTensorFromFile(tensorName1);
@@ -204,12 +242,12 @@ public class TensorOp {
             }
         } catch (Exception e) {
             System.err.println("An error occurred while adding tensors: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Input Example: add a b");
         }
     }
     private static void scalarAddition(String command) {
         try {
-            String[] parts = command.substring(5, command.length() - 1).split(",");
+            String[] parts = command.substring(5, command.length()).split(" ");
             String tensorName1 = parts[0].trim();
             String scalar = parts[1].trim();
             Tensor tensor1 = readTensorFromFile(tensorName1);
@@ -223,13 +261,13 @@ public class TensorOp {
             }
         } catch (Exception e) {
             System.err.println("An error occurred while adding tensor: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Input Example: sadd a b");
         }
     }
 
     private static void subtractTensors(String command) {
         try {
-            String[] parts = command.substring(4, command.length() - 1).split(",");
+            String[] parts = command.substring(4, command.length()).split(" ");
             String tensorName1 = parts[0].trim();
             String tensorName2 = parts[1].trim();
             Tensor tensor1 = readTensorFromFile(tensorName1);
@@ -243,12 +281,12 @@ public class TensorOp {
             }
         } catch (Exception e) {
             System.err.println("An error occurred while subtracting tensors: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Input Example: sub a b");
         }
     }
     private static void dotTensors(String command) {
         try {
-            String[] parts = command.substring(4, command.length() - 1).split(",");
+            String[] parts = command.substring(4, command.length()).split(" ");
             String tensorName1 = parts[0].trim();
             String tensorName2 = parts[1].trim();
             Tensor tensor1 = readTensorFromFile(tensorName1);
@@ -260,13 +298,13 @@ public class TensorOp {
             }
         } catch (Exception e) {
             System.err.println("An error occurred while doing dot product tensors: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Input Example: dot a b");
         }
     }
     
     private static void scalarSubtraction(String command) {
         try {
-            String[] parts = command.substring(5, command.length() - 1).split(",");
+            String[] parts = command.substring(5, command.length() ).split(" ");
             String tensorName1 = parts[0].trim();
             String scalar = parts[1].trim();
             Tensor tensor1 = readTensorFromFile(tensorName1);
@@ -280,13 +318,13 @@ public class TensorOp {
             }
         } catch (Exception e) {
             System.err.println("An error occurred while subtracting tensor: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Input Example: ssub a b");
         }
     }
 
     private static void multiplyTensors(String command) {
         try {
-            String[] parts = command.substring(4, command.length() - 1).split(",");
+            String[] parts = command.substring(4, command.length()).split(" ");
             String tensorName1 = parts[0].trim();
             String tensorName2 = parts[1].trim();
             Tensor tensor1 = readTensorFromFile(tensorName1);
@@ -300,12 +338,12 @@ public class TensorOp {
             }
         } catch (Exception e) {
             System.err.println("An error occurred while multiplying tensors: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Input Example: mul a b");
         }
     }
     private static void scalarMultiplication(String command) {
         try {
-            String[] parts = command.substring(5, command.length() - 1).split(",");
+            String[] parts = command.substring(5, command.length()).split(" ");
             String tensorName1 = parts[0].trim();
             String scalar = parts[1].trim();
             Tensor tensor1 = readTensorFromFile(tensorName1);
@@ -319,13 +357,13 @@ public class TensorOp {
             }
         } catch (Exception e) {
             System.err.println("An error occurred while multiplying tensors: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Input Example: smul a b");
         }
     }
 
     private static void divideTensors(String command) {
         try {
-            String[] parts = command.substring(4, command.length() - 1).split(",");
+            String[] parts = command.substring(4, command.length()).split(" ");
             String tensorName1 = parts[0].trim();
             String tensorName2 = parts[1].trim();
             Tensor tensor1 = readTensorFromFile(tensorName1);
@@ -339,12 +377,12 @@ public class TensorOp {
             }
         } catch (Exception e) {
             System.err.println("An error occurred while dividing tensors: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Input Example: div a b");
         }
     }
     private static void scalarDivision(String command) {
         try {
-            String[] parts = command.substring(5, command.length() - 1).split(",");
+            String[] parts = command.substring(5, command.length()).split(" ");
             String tensorName1 = parts[0].trim();
             String scalar = parts[1].trim();
             Tensor tensor1 = readTensorFromFile(tensorName1);
@@ -358,7 +396,7 @@ public class TensorOp {
             }
         } catch (Exception e) {
             System.err.println("An error occurred while dividing tensor: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Input Example: sdiv a b");
         }
     }
 
@@ -368,10 +406,31 @@ public class TensorOp {
             bw.newLine();
         } catch (IOException e) {
             System.err.println("IOException occurred while writing tensor to file: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Try again!");
         }
     }
+    private static void printHelp(String command) {
+    	String[] parts=command.split(" ",2);
+    	if(parts.length>=2) {
+    	String helpName=parts[1].trim();
+    	String line = readHelpFromFile(helpName);
+    	if(line!=null) {
+    		System.out.println(line);
+    	}
 
+    	else {
+    		System.out.println(ANSI_GREEN+"Create tensor---- name= [ a00 a01 a02....a0n ,..., an0 an1 an2 ann..;...;b00 b01 b02....b0n ,..., bn0 bn1 bn2 bnn..]"+ANSI_RESET);
+    		System.out.println("b=[1 2 3, 2 3 1; 1 1 1, 2 2 2] \n'Write your desired numbers'");
+    		System.out.println(ANSI_RED+"Type help and any of the following:\ncreate, add, mul, div, scalar add, scalar div, scalar add,\ntranspose, stride, dimension, slice, dot"+ANSI_RESET);
+        	}
+    	
+    }
+    	else {
+    		System.out.println(ANSI_GREEN+"Create tensor---- name= [ a00 a01 a02....a0n ,..., an0 an1 an2 ann..;...;b00 b01 b02....b0n ,..., bn0 bn1 bn2 bnn..]"+ANSI_RESET);
+    		System.out.println("b=[1 2 3, 2 3 1; 1 1 1, 2 2 2] \n'Write your desired numbers'");
+    		System.out.println(ANSI_RED+"Type help and any of the following:\ncreate, add, mul, div, scalar add, scalar div, scalar add,\ntranspose, stride, dimension, slice, dot"+ANSI_RESET);
+        	}
+   }
     private static Tensor readTensorFromFile(String tensorName) {
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
             String line;
@@ -383,6 +442,7 @@ public class TensorOp {
             }
         } catch (IOException e) {
             System.err.println("IOException occurred while reading tensor from file: " + e.getMessage());
+            System.out.println("Try again!");
             e.printStackTrace();
         }
         return null;
@@ -392,11 +452,11 @@ public class TensorOp {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filepath))) {
             bw.write("");
             System.out.println("Thank you for choosing MatrixIT :)");
+            System.out.println("Enter your choice again or exit to quit:");
+            System.out.println(" m. Matrix \n t. Tensor \n l.Linear\n Or Type help");
         } catch (IOException e) {
             System.err.println("IOException occurred while clearing the file: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
-    
 }
