@@ -2,25 +2,25 @@ package linear;
 import java.util.Scanner;
 public class LinearEq {
 	public static void executeCommand(String command,Scanner scanner) {
-        if (command.startsWith("bis(") && command.endsWith(")")) {
+        if (command.startsWith("bis")) {
             calculateBisection(command,scanner);
         }
-        else if (command.startsWith("gjor(") && command.endsWith(")")) {
+        else if (command.startsWith("gjor")) {
         	calculateGaussjordan(command,scanner);
         }
-        else if (command.startsWith("gsei(") && command.endsWith(")")) {
+        else if (command.startsWith("gsei")) {
         	calculateGaussseidel(command,scanner);
         } 
-        else if (command.startsWith("fp(") && command.endsWith(")")) {
+        else if (command.startsWith("fp")) {
         	calculateFalseposition(command,scanner);
         }
-        else if (command.startsWith("NR(") && command.endsWith(")")) {
+        else if (command.startsWith("NR")) {
         	calculateNewtonrhapson(command,scanner);
         }
-        else if (command.startsWith("scnt(") && command.endsWith(")")) {
+        else if (command.startsWith("scnt") ) {
         	calculateSecant(command,scanner);
         }
-        else if (command.startsWith("hel") && command.endsWith("p")) {
+        else if (command.startsWith("help")) {
         	printHelp(command);
         }
         else {
@@ -89,11 +89,11 @@ private static void calculateGaussseidel(String command, Scanner scanner) {
 	Linear.GaussSeidel(n);
 }
 private static void printHelp(String command) {
-    System.out.println("Bisection method = bis()");
-    System.out.println("Gauss-Jordan method = gjor()");
-    System.out.println("Gauss-Seidel method = gsei()");
-    System.out.println("False Position method = fp()");
-    System.out.println("Newton-Raphson method = NR()");
+    System.out.println("Bisection method = bis");
+    System.out.println("Gauss-Jordan method = gjor");
+    System.out.println("Gauss-Seidel method = gsei");
+    System.out.println("False Position method = fp");
+    System.out.println("Newton-Raphson method = NR");
     System.out.println("Secant method = scnt()");
     }
 
