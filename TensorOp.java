@@ -43,15 +43,16 @@ public class TensorOp {
     	return null;
     }
     public static void executeCommand(String command, Scanner scanner) {
-    	String s="[a-zA-Z]+ *= *\\[ *([[0-9]+, *[0-9]+ *]+;?)+ *\\]";
+//    	String s="[a-zA-Z]+ *= *\\[ *([[0-9]+, *[0-9]+ *]+;?)+ *\\]";
+    	String s="[a-zA-Z]+ *= *\\[ *([-]?[0-9]+(?:[ ,]+[-]?[0-9]+)* *(?:; *[-]?[0-9]+(?:[ ,]+[-]?[0-9]+)*)*) *\\]";
     	String add="add +[a-zA-z]+ +[a-zA-Z]+";
     	String sub="sub +[a-zA-z]+ +[a-zA-Z]+";
     	String mul="mul +[a-zA-z]+ +[a-zA-Z]+";
     	String div="div +[a-zA-z]+ +[a-zA-Z]+";
-    	String sadd="sadd +[a-zA-z]+ +[0-9]+";
-    	String ssub="ssub +[a-zA-z]+ +[0-9]+";
-    	String smul="smul +[a-zA-z]+ +[0-9]+";
-    	String sdiv="sdiv +[a-zA-z]+ +[0-9]+";
+    	String sadd="sadd +[a-zA-z]+ +[-0-9]+";
+    	String ssub="ssub +[a-zA-z]+ +[-0-9]+";
+    	String smul="smul +[a-zA-z]+ +[-0-9]+";
+    	String sdiv="sdiv +[a-zA-z]+ +[-0-9]+";
     	String dot="dot +[a-zA-z]+ +[a-zA-Z]+";
     	String slice="slice +[a-zA-Z]+";
     	String str="str +[a-zA-Z]+";
@@ -138,7 +139,7 @@ public class TensorOp {
         } catch (Exception e) {
             System.err.println("An error occurred while reshaping tensor: " + e.getMessage());
             e.printStackTrace();
-            System.out.println("Enter reshape TensorA TensorB TensorC \nAxBxC should be equal to previous dimensional product");
+            System.out.println("Enter reshape Tensor A B C \nAxBxC should be equal to previous dimensional product");
         }
     }
     private static void inquireDimension(String command) {
