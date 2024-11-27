@@ -172,12 +172,17 @@ public class Matrix {
             return matrix.data[0][0];//single element 
         }
         if (n == 2) {
+        	System.out.println("(("+matrix.data[0][0] +" X "+ matrix.data[1][1] +") - ("+ matrix.data[0][1] +" X "+matrix.data[1][0]+"))");
             return matrix.data[0][0] * matrix.data[1][1] - matrix.data[0][1] * matrix.data[1][0];//cross mul for 4 element and then div
         }
         double det = 0;
         for (int i = 0; i < n; i++) {
+        	System.out.println("For index "+ i+1 );
+        	System.out.println("( -1^"+i +" X "+ matrix.data[0][i] +" X "+determinant(minor(matrix, 0, i))+") + ");
             det += Math.pow(-1, i) * matrix.data[0][i] * determinant(minor(matrix, 0, i));
+            
         }
+        System.out.println("Determinant is: "+det);
         return det;
     }
     public static Matrix transpose(Matrix matrix) {
