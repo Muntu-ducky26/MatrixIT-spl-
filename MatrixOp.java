@@ -27,7 +27,8 @@ public class MatrixOp {
     
 
     public static void executeCommand(String command,Scanner scanner) {
-    	String s = "[a-zA-Z]+ *= *\\[[0-9 ]+(?:;[0-9 ]+)*\\]";
+//    	String s = "[a-zA-Z]+ *= *\\[[0-9 ]+(?:;[0-9 ]+)*\\]";
+    	String s = "[a-zA-Z]+ *= *\\[ *[-0-9 ]+(?:; *[-0-9 ]+)* *\\]";
     	String sqr="sqr +[a-zA-Z]+";
     	String add="add +[a-zA-z]+ +[a-zA-Z]+";
     	String sub="sub +[a-zA-z]+ +[a-zA-Z]+";
