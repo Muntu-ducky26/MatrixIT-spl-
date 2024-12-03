@@ -2,110 +2,102 @@ package tensor;
 
 public class Tensor {
     double[][][] data;
-    int depth, rows, cols;
-
-    public Tensor(int depth, int rows, int cols) {
-        this.depth = depth;
-        this.rows = rows;
-        this.cols = cols;
-        this.data = new double[depth][rows][cols];
+    int d, r, c;
+    public Tensor(int d,int r,int c) {
+        this.d=d;
+        this.r=r;
+        this.c=c;
+        this.data=new double[d][r][c];
     }
-
     public Tensor(double[][][] data) {
-        this.data = data;
-        this.depth = data.length;
-        this.rows = data[0].length;
-        this.cols = data[0][0].length;
+        this.data=data;
+        this.d=data.length;
+        this.r=data[0].length;
+        this.c=data[0][0].length;
     }
-
     public void setData(double[][][] data) {
-        this.data = data;
+    	this.data=data;
     }
-
     public double[][][] getData() {
         return this.data;
     }
-
-    public Tensor reshape(int newDepth, int newRows, int newCols) {
-        if (newDepth * newRows * newCols != this.depth * this.rows * this.cols) {
+    public Tensor reshape(int depth, int row, int col){
+        if (depth*row*col != this.d * this.r * this.c) {
             throw new IllegalArgumentException("New dimensions must match the total number of elements.");
         }
-
-        double[] Datasequence = new double[this.depth * this.rows * this.cols];
-        int index = 0;
+        double[] datseq = new double[this.d * this.r * this.c];
+        int flag = 0;
         System.out.println("Data in sequence observation:");
-        for (int d = 0; d < this.depth; d++) {
-            for (int r = 0; r < this.rows; r++) {
-                for (int c = 0; c < this.cols; c++) {
-                    Datasequence[index++] = this.data[d][r][c];
+        for (int d = 0; d < this.d; d++) {
+            for (int r = 0; r < this.r; r++) {
+                for (int c = 0; c < this.c; c++) {
+                    datseq[flag++] = this.data[d][r][c];
                     System.out.print("| " + this.data[d][r][c] + " |");
                 }
             }
         }
         System.out.println();
-
-        Tensor reshaped = new Tensor(newDepth, newRows, newCols);
-        index = 0;
+        Tensor t=new Tensor(depth, row, col);
+        flag = 0;
         System.out.println("Tensor Data Allocation : ");
-        for (int d = 0; d < newDepth; d++) {
-            for (int r = 0; r < newRows; r++) {
-                for (int c = 0; c < newCols; c++) {
-                    reshaped.data[d][r][c] = Datasequence[index++];
-                    System.out.println(" Reshaped b"+ d + r + c + " = " + reshaped.data[d][r][c]);
+        for (int d=0; d<depth; d++) {
+            for (int r=0; r<row; r++) {
+                for (int c=0; c<col; c++) {
+                    t.data[d][r][c] = datseq[flag++];
+                    System.out.println("Reshaped b"+d+r+c+" = "+t.data[d][r][c]);
                 }
-            }
+           }
         }
-        return reshaped;
+        return t;
     }
-
     public Tensor transpose() {
-        Tensor transposed = new Tensor(this.cols, this.rows, this.depth);
+        Tensor t = new Tensor(this.c, this.r, this.d);
+        int x=this.c;
+        int y=this.r;
+        int z=this.d;
         System.out.println("The dimensions of transposed tensor will be changed like the following: ");
         System.out.println("Transposed tensor's[depth][row][col]  =  Initial tensor's[col][row][depth]");
-        for (int d = 0; d < this.depth; d++) {
-            for (int r = 0; r < this.rows; r++) {
-                for (int c = 0; c < this.cols; c++) {
-                	System.out.println("Transposed b"+ c + r + d +" = " + "Initial a" + d + r + c +" : "+transposed.data[c][r][d] + " = " + this.data[d][r][c]);
-                    transposed.data[c][r][d] = this.data[d][r][c];
+        for (int d = 0;d<z; d++) {
+            for (int r = 0;r<y; r++) {
+                for (int c = 0;c<x; c++) {
+                	System.out.println("Transposed b"+ c + r + d +" = " + "Initial a" + d + r + c +" : "+t.data[c][r][d] + " = " + this.data[d][r][c]);
+                    t.data[c][r][d] = this.data[d][r][c];
                 }
             }
         }
-        return transposed;
+        return t;
     }
     public void dimension() {
-    	System.out.println("The depth of the tensor is : " + this.depth);
-    	System.out.println("The row of the tensor is : " + this.rows);
-    	System.out.println("The column of the tensor is : " + this.cols);
-    	System.out.println(".'. The Dimension of the tensor will be : [" + this.depth +"] [" + this.rows + "] [" + this.cols +"]");
+    	System.out.println("The depth of the tensor is : " + this.d);
+    	System.out.println("The row of the tensor is : " + this.r);
+    	System.out.println("The column of the tensor is : " + this.c);
+    	System.out.println(".'. The Dimension of the tensor will be : ["+this.d+"] ["+this.r+"] ["+this.c+"]");
     }
     public static void slicingTensor( Tensor tensor, int dS, int dE, int rS, int rE, int cS, int cE) {
-        int depth = dE - dS;
-        int rows = rE - rS;
-        int cols = cE - cS;
-        Tensor result = new Tensor(depth, rows, cols);
-
-        for (int i = dS; i < dE; i++) {
-            for (int j = rS; j < rE; j++) {
-                for (int k = cS; k < cE; k++) {
-                    result.data[i - dS][j - rS][k - cS] = tensor.data[i][j][k];
+        int d=dE-dS;
+        int r=rE-rS;
+        int c=cE-cS;
+        Tensor t = new Tensor(d, r, c);
+        for (int i=dS; i<dE; i++) {
+            for (int j=rS; j<rE; j++) {
+                for (int k=cS; k<cE; k++) {
+                    t.data[i-dS][j-rS][k-cS]=tensor.data[i][j][k];
                 }
             }
         }
-        result.print();
+        t.print();
     }
     public static void dotProduct(Tensor tensor1, Tensor tensor2) {
-        int depth = tensor1.depth;
-        int rows = tensor1.rows;
-        int cols = tensor2.cols;
-
-        Tensor result = new Tensor(depth,rows,cols);
-
-        for (int i = 0; i < depth; i++) {
-            for (int j = 0; j < rows; j++) {
-                for (int k = 0; k < cols; k++) {
-                    for (int l = 0; l < tensor1.cols; l++) {
-                        result.data[i][j][k] += tensor1.data[i][j][l] * tensor2.data[i][l][k];
-                        System.out.print("(" + tensor1.data[i][j][l] + "*" + tensor2.data[i][l][k]+")" + " + ");
+        int d=tensor1.d;
+        int r=tensor1.r;
+        int c=tensor2.c;
+        Tensor t = new Tensor(d,r,c);
+        for (int i = 0; i < d; i++) {
+            for (int j = 0; j < r; j++) {
+                for (int k = 0; k < c; k++) {
+                    for (int l = 0; l < tensor1.c; l++) {
+                        t.data[i][j][k] += tensor1.data[i][j][l] * tensor2.data[i][l][k];
+                        System.out.print("(" + tensor1.data[i][j][l] + "*" + tensor2.data[i][l][k]+") "+" + ");
                     }
                     System.out.print("\t");
                 }
@@ -113,60 +105,60 @@ public class Tensor {
             }
         }
 
-        result.print();
+        t.print();
     }
 
     public void dimensionalstride() {
     	System.out.println("The innermost dimension of the tensor is (along the columns) : " + 1);
-    	System.out.println("The Stride along Rows will be : " + this.cols);
-    	System.out.println("The outermost dimension of the tensor is (along the depth) :" + this.cols*this.rows );
-    	System.out.println(".'. The Dimensional Stride of the tensor will be : [" + 1 +"] [" + this.cols + "] [" + this.cols*this.rows +"]");
+    	System.out.println("The Stride along Rows will be : " + this.c);
+    	System.out.println("The outermost dimension of the tensor is (along the depth) :" + this.c*this.r );
+    	System.out.println(".'. The Dimensional Stride of the tensor will be : [" + 1 +"] [" + this.c + "] [" + this.c*this.r +"]");
     }
     
     public static Tensor add(Tensor t1,Tensor t2) {
-        if (t1.depth != t2.depth || t1.rows != t2.rows || t1.cols != t2.cols) {
+        if (t1.d != t2.d || t1.r != t2.r || t1.c != t2.c) {
             throw new IllegalArgumentException("Tensor dimensions do not match for addition.");
         }
-        Tensor result = new Tensor(t1.depth, t1.rows, t1.cols);
-        for (int d = 0; d < t1.depth; d++) {
-            for (int r = 0; r < t1.rows; r++) {
-                for (int c = 0; c < t1.cols; c++) {
-                    result.data[d][r][c] = t1.data[d][r][c] + t2.data[d][r][c];
+        Tensor t = new Tensor(t1.d, t1.r, t1.c);
+        for (int d = 0; d < t1.d; d++) {
+            for (int r = 0; r < t1.r; r++) {
+                for (int c = 0; c < t1.c; c++) {
+                    t.data[d][r][c] = t1.data[d][r][c] + t2.data[d][r][c];
                     System.out.printf(t1.data[d][r][c] + " + " + t2.data[d][r][c] + "   ");
                 }
                 System.out.println();
             }
             System.out.println();
         }
-        return result;
+        return t;
     }
 
     public static Tensor subtract(Tensor t1,Tensor t2) {
-    	if (t1.depth != t2.depth || t1.rows != t2.rows || t1.cols != t2.cols) {
+    	if (t1.d != t2.d || t1.r != t2.r || t1.c != t2.c) {
             throw new IllegalArgumentException("Tensor dimensions do not match for subtraction.");
         }
-    	Tensor result = new Tensor(t1.depth, t1.rows, t1.cols);
-        for (int d = 0; d < t1.depth; d++) {
-            for (int r = 0; r < t1.rows; r++) {
-                for (int c = 0; c < t1.cols; c++) {
-                    result.data[d][r][c] = t1.data[d][r][c] - t2.data[d][r][c];
+    	Tensor t = new Tensor(t1.d, t1.r, t1.c);
+        for (int d = 0; d < t1.d; d++) {
+            for (int r = 0; r < t1.r; r++) {
+                for (int c = 0; c < t1.c; c++) {
+                    t.data[d][r][c] = t1.data[d][r][c] - t2.data[d][r][c];
                     System.out.printf(t1.data[d][r][c] + " - " + t2.data[d][r][c] + "   ");
                 }
                 System.out.println();
             }
             System.out.println();
         }
-        return result;
+        return t;
     }
 
     public static Tensor multiply(Tensor t1,Tensor t2) {
-    	if (t1.depth != t2.depth || t1.rows != t2.rows || t1.cols != t2.cols) {
+    	if (t1.d != t2.d || t1.r != t2.r || t1.c != t2.c) {
             throw new IllegalArgumentException("Tensor dimensions do not match for multiplication.");
         }
-    	Tensor result = new Tensor(t1.depth, t1.rows, t1.cols);
-        for (int d = 0; d < t1.depth; d++) {
-            for (int r = 0; r < t1.rows; r++) {
-                for (int c = 0; c < t1.cols; c++) {
+    	Tensor result = new Tensor(t1.d, t1.r, t1.c);
+        for (int d = 0; d < t1.d; d++) {
+            for (int r = 0; r < t1.r; r++) {
+                for (int c = 0; c < t1.c; c++) {
                     result.data[d][r][c] = t1.data[d][r][c] * t2.data[d][r][c];
                     System.out.printf(t1.data[d][r][c] + " X " + t2.data[d][r][c] + "   ");
                 }
@@ -176,122 +168,116 @@ public class Tensor {
         }
         return result;
     }
-
     public static Tensor divide(Tensor t1,Tensor t2) {
-    	if (t1.depth != t2.depth || t1.rows != t2.rows || t1.cols != t2.cols) {
+    	if (t1.d != t2.d || t1.r != t2.r || t1.c != t2.c) {
             throw new IllegalArgumentException("Tensor dimensions do not match for division.");
         }
-        Tensor result = new Tensor(t1.depth, t1.rows, t1.cols);
-        for (int d = 0; d < t1.depth; d++) {
-            for (int r = 0; r < t1.rows; r++) {
-                for (int c = 0; c < t1.cols; c++) {
+        Tensor t = new Tensor(t1.d, t1.r, t1.c);
+        for (int d = 0; d < t1.d; d++) {
+            for (int r = 0; r < t1.r; r++) {
+                for (int c = 0; c < t1.c; c++) {
                     if (t2.data[d][r][c] == 0) {
                         throw new ArithmeticException("Division by zero");
                     }
-                    result.data[d][r][c] = t1.data[d][r][c] / t2.data[d][r][c];
+                    t.data[d][r][c] = t1.data[d][r][c] / t2.data[d][r][c];
                     System.out.printf(t1.data[d][r][c] + " / " + t2.data[d][r][c] + "   ");
                 }
                 System.out.println();
             }
             System.out.println();
         }
-        return result;
+        return t;
     }
-    public static Tensor scalarAdd(Tensor t1, double scalar) {
-        Tensor result = new Tensor(t1.depth, t1.rows, t1.cols);
-        for (int d = 0; d < t1.depth; d++) {
-            for (int r = 0; r < t1.rows; r++) {
-                for (int c = 0; c < t1.cols; c++) {
-                    result.data[d][r][c] = t1.data[d][r][c] + scalar;
-                    System.out.printf(t1.data[d][r][c] + " + " + scalar + "   ");
+    public static Tensor scalarAdd(Tensor t1, double a) {
+        Tensor t = new Tensor(t1.d, t1.r, t1.c);
+        for (int d=0; d<t1.d; d++) {
+            for (int r=0; r<t1.r; r++) {
+                for (int c=0; c<t1.c; c++) {
+                    t.data[d][r][c] = t1.data[d][r][c] + a;
+                    System.out.printf(t1.data[d][r][c] + " + " + a + "   ");
                 }
                 System.out.println();
             }
             System.out.println();
         }
-        return result;
+        return t;
     }
     
-    public static Tensor scalarSub(Tensor t1, double scalar) {
-        Tensor result = new Tensor(t1.depth, t1.rows, t1.cols);
-        for (int d = 0; d < t1.depth; d++) {
-            for (int r = 0; r < t1.rows; r++) {
-                for (int c = 0; c < t1.cols; c++) {
-                    result.data[d][r][c] = t1.data[d][r][c] - scalar;
-                    System.out.printf(t1.data[d][r][c] + " - " + scalar + "   ");
+    public static Tensor scalarSub(Tensor t1, double a) {
+        Tensor t = new Tensor(t1.d, t1.r, t1.c);
+        for (int d=0; d<t1.d; d++) {
+            for (int r=0; r<t1.r; r++) {
+                for (int c=0; c<t1.c; c++) {
+                    t.data[d][r][c] = t1.data[d][r][c] - a;
+                    System.out.printf(t1.data[d][r][c] + " - " + a + "   ");
                 }
                 System.out.println();
             }
             System.out.println();
         }
-        return result;
+        return t;
     }
-    public static Tensor scalarMul(Tensor t1, double scalar) {
-        Tensor result = new Tensor(t1.depth, t1.rows, t1.cols);
-        for (int d = 0; d < t1.depth; d++) {
-            for (int r = 0; r < t1.rows; r++) {
-                for (int c = 0; c < t1.cols; c++) {
-                    result.data[d][r][c] = t1.data[d][r][c] * scalar;
-                    System.out.printf(t1.data[d][r][c] + " X " + scalar + "   ");
+    public static Tensor scalarMul(Tensor t1, double a) {
+        Tensor t=new Tensor(t1.d, t1.r, t1.c);
+        for (int d=0; d<t1.d; d++) {
+            for (int r=0; r<t1.r; r++) {
+                for (int c=0; c<t1.c; c++) {
+                    t.data[d][r][c] = t1.data[d][r][c] * a;
+                    System.out.printf(t1.data[d][r][c] + " X " + a + "   ");
                 }
                 System.out.println();
             }
             System.out.println();
         }
-        return result;
+        return t;
     }
-    public static Tensor scalarDiv(Tensor t1, double scalar) {
-        if (scalar == 0) {
+    public static Tensor scalarDiv(Tensor t1, double a) {
+        if (a == 0) {
             throw new IllegalArgumentException("Division by zero is not allowed.");
         }
-        
-        Tensor result = new Tensor(t1.depth, t1.rows, t1.cols);
-        for (int d = 0; d < t1.depth; d++) {
-            for (int r = 0; r < t1.rows; r++) {
-                for (int c = 0; c < t1.cols; c++) {
-                    result.data[d][r][c] = t1.data[d][r][c] / scalar;
-                    System.out.printf(t1.data[d][r][c] + " / " + scalar + "   ");
+        Tensor t = new Tensor(t1.d, t1.r, t1.c);
+        for (int d = 0; d < t1.d; d++) {
+            for (int r = 0; r < t1.r; r++) {
+                for (int c = 0; c < t1.c; c++) {
+                    t.data[d][r][c] = t1.data[d][r][c] / a;
+                    System.out.printf(t1.data[d][r][c] + " / " + a + "   ");
                 }
                 System.out.println();
             }
             System.out.println();
         }
-        return result;
+        return t;
+    }
+    public void print(){
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                for (int k = 0; k < data[i][j].length; k++) {
+                    System.out.print(data[i][j][k] + " ");
+                }
+                System.out.println();
+            }
+            System.out.println();
+        }
     }
 
-    
-    
-    
-    
-    public void print() {
-        for (double[][] matrix : data) {
-            for (double[] row : matrix) {
-                for (double elem : row) {
-                    System.out.print(elem + " ");
-                }
-                System.out.println();
-            }
-            System.out.println();
-        }
-    }
 
     public static Tensor fromString(String tensorData) {
-        String[] matrices = tensorData.split(";");
-        int d = matrices.length;
-        String[] rows = matrices[0].split(",");
+        String[] s = tensorData.split(";");
+        int d = s.length;
+        String[] rows = s[0].split(",");
         int r = rows.length;
         int c = rows[0].trim().split("\\s+").length;
-        Tensor tensor = new Tensor(d, r, c);
+        Tensor t = new Tensor(d, r, c);
         for (int i = 0; i < d; i++) {
-            rows = matrices[i].split(",");
+            rows = s[i].split(",");
             for (int j = 0; j < r; j++) {
-                String[] elements = rows[j].trim().split("\\s+");
+                String[] elem = rows[j].trim().split("\\s+");
                 for (int k = 0; k < c; k++) {
-                    tensor.data[i][j][k] = Double.parseDouble(elements[k]);
+                    t.data[i][j][k] = Double.parseDouble(elem[k]);
                 }
             }
         }
-        return tensor;
+        return t;
     }
 
     

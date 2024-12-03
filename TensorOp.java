@@ -4,11 +4,11 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
 public class TensorOp {
-	public static final String ANSI_RESET = "\u001B[0m";
-	public static final String ANSI_RED  = "\u001B[31m";
-	public static final String ANSI_BLUE  = "\u001B[34m";
-	public static final String ANSI_GREEN  = "\u001B[32m";
-    private static final String filepath = System.getProperty("user.home") + File.separator + "variablest.txt";
+	public static final String RESET = "\u001B[0m";
+	public static final String RED  = "\u001B[31m";
+	public static final String BLUE  = "\u001B[34m";
+	public static final String GREEN  = "\u001B[32m";
+    private static final String path = System.getProperty("user.home") + File.separator + "variablest.txt";
     private static final String helppath = "C:\\Users\\HP\\eclipse-workspace\\MatrixIT\\src\\helpt.txt";
 
     public static void main(String[] args) {
@@ -16,14 +16,13 @@ public class TensorOp {
     }
 
     public static void readTensorFromFile() {
-        try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String line;
             while ((line = br.readLine()) != null) {
                 executeCommand(line, null);
             }
         } catch (IOException e) {
-            System.err.println("IOException occurred: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("IOException occurred: Try again or Type help");
         }
         }
     private static String readHelpFromFile(String s) {
@@ -36,8 +35,7 @@ public class TensorOp {
     		}
     	}
     	catch (IOException e) {
-    		System.err.println("IOException occurred: " + e.getMessage());
-            System.out.println("Try Again!");
+            System.out.println("Try Again! Couldn't read from File.");
             
     	}
     	return null;
@@ -123,18 +121,18 @@ public class TensorOp {
 
     private static void reshapingTensor(String command) {
         try {
-            String[] parts = command.substring(8, command.length()).split(" ");
-            String tensorName = parts[0].trim();
-            int newDepth = Integer.parseInt(parts[1].trim());
-            int newRows = Integer.parseInt(parts[2].trim());
-            int newCols = Integer.parseInt(parts[3].trim());
-            Tensor tensor = readTensorFromFile(tensorName);
-            if (tensor != null) {
-                Tensor reshaped = tensor.reshape(newDepth, newRows, newCols);
-                System.out.println("Tensor " + tensorName + " reshaped:");
-                reshaped.print();
+            String[] s = command.substring(8, command.length()).split(" ");
+            String ten = s[0].trim();
+            int d = Integer.parseInt(s[1].trim());
+            int r = Integer.parseInt(s[2].trim());
+            int c = Integer.parseInt(s[3].trim());
+            Tensor t = readTensorFromFile(ten);
+            if (t != null) {
+                Tensor t1 = t.reshape(d, r, c);
+                System.out.println("Tensor " + ten + " reshaped:");
+                t1.print();
             } else {
-                System.out.println(tensorName + " is not recognized");
+                System.out.println(ten + " is not recognized");
             }
         } catch (Exception e) {
             System.err.println("An error occurred while reshaping tensor: " + e.getMessage());
@@ -144,43 +142,41 @@ public class TensorOp {
     }
     private static void inquireDimension(String command) {
     	try {
-    		String tensorName= command.substring(4, command.length()).trim();
-    		Tensor tensor = readTensorFromFile(tensorName);
-            if (tensor != null) {
-                System.out.println("Tensor " + tensorName + " Dimensions are:");
-                tensor.dimension();
+    		String ten= command.substring(4, command.length()).trim();
+    		Tensor t = readTensorFromFile(ten);
+            if (t != null) {
+                System.out.println("Tensor " + ten + " Dimensions are:");
+                t.dimension();
             } else {
-                System.out.println(tensorName + " is not recognized");
+                System.out.println(ten + " is not recognized");
             }
         } catch (Exception e) {
-            System.err.println("An error occurred while transposing tensor: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("An error occurred while inquiring tensor: Try again!");
         }
     }
     private static void sliceTensors(String command, Scanner scanner) {
     	try {
-    		String tensorName= command.substring(6, command.length()).trim();
-    		Tensor t = readTensorFromFile(tensorName);
+    		String ten= command.substring(6, command.length()).trim();
+    		Tensor t = readTensorFromFile(ten);
             if (t != null) {
                 System.out.println("Enter the slicing data: ");
                 System.out.println();
                 System.out.println("Enter the depth start and end : ");
-                int startDepth = scanner.nextInt();
-                int endDepth = scanner.nextInt();
+                int ds = scanner.nextInt();
+                int de = scanner.nextInt();
                 System.out.println("Enter the Row start and end : ");
-                int startRow = scanner.nextInt();
-                int endRow = scanner.nextInt();
+                int rs = scanner.nextInt();
+                int re = scanner.nextInt();
                 System.out.println("Enter the Column start and end : ");
-                int startCol = scanner.nextInt();
-                int endCol = scanner.nextInt();
+                int cs = scanner.nextInt();
+                int ce = scanner.nextInt();
                 
-                Tensor.slicingTensor(t, startDepth, endDepth, startRow, endRow, startCol, endCol);
+                Tensor.slicingTensor(t, ds, de, rs, re, cs, ce);
             } else {
-                System.out.println(tensorName + " is not recognized");
+                System.out.println(ten + " is not recognized");
             }
         } catch (Exception e) {
-            System.err.println("An error occurred while transposing tensor: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("An error occurred while slicing tensor: Try again!");
         }
     }
     private static void printTen(String command) {
@@ -205,39 +201,38 @@ public class TensorOp {
                 System.out.println(tensorName + " is not recognized");
             }
         } catch (Exception e) {
-            System.err.println("An error occurred while transposing tensor: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("An error occurred while inquiring Dimensional Stride tensor: " + e.getMessage());
+            
         }
     }
 
     private static void transTensor(String command) {
         try {
-            String tensorName = command.substring(6, command.length()).trim();
-            Tensor tensor = readTensorFromFile(tensorName);
-            if (tensor != null) {
-                Tensor T = tensor.transpose();
-                System.out.println("Tensor " + tensorName + " transposed:");
+            String s = command.substring(6, command.length()).trim();
+            Tensor t = readTensorFromFile(s);
+            if (t != null) {
+                Tensor T = t.transpose();
+                System.out.println("Tensor " + s + " transposed:");
                 T.print();
-            } else {
-                System.out.println(tensorName + " is not recognized");
+            } else{
+                System.out.println(s + " is not recognized");
             }
         } catch (Exception e) {
-            System.err.println("An error occurred while transposing tensor: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("An error occurred while transposing tensor: Try again!");
         }
     }
 
     private static void addTensors(String command) {
         try {
-            String[] parts = command.substring(4, command.length()).split(" ");
-            String tensorName1 = parts[0].trim();
-            String tensorName2 = parts[1].trim();
-            Tensor tensor1 = readTensorFromFile(tensorName1);
-            Tensor tensor2 = readTensorFromFile(tensorName2);
-            if (tensor1 != null && tensor2 != null) {
-                Tensor result = Tensor.add(tensor1, tensor2);
+            String[] s = command.substring(4, command.length()).split(" ");
+            String ten1 = s[0].trim();
+            String ten2 = s[1].trim();
+            Tensor t1 = readTensorFromFile(ten1);
+            Tensor t2 = readTensorFromFile(ten2);
+            if (t1 != null && t2 != null) {
+                Tensor t = Tensor.add(t1, t2);
                 System.out.println("Result of addition:");
-                result.print();
+                t.print();
             } else {
                 System.out.println("One or both tensor names are not recognized");
             }
@@ -248,15 +243,15 @@ public class TensorOp {
     }
     private static void scalarAddition(String command) {
         try {
-            String[] parts = command.substring(5, command.length()).split(" ");
-            String tensorName1 = parts[0].trim();
-            String scalar = parts[1].trim();
-            Tensor tensor1 = readTensorFromFile(tensorName1);
-            double s = Double.parseDouble(scalar);
-            if (tensor1 != null) {
-                Tensor result = Tensor.scalarAdd(tensor1, s);
+            String[] s = command.substring(5, command.length()).split(" ");
+            String ten1 = s[0].trim();
+            String a = s[1].trim();
+            Tensor t1 = readTensorFromFile(ten1);
+            double s1 = Double.parseDouble(a);
+            if (t1 != null) {
+                Tensor t = Tensor.scalarAdd(t1, s1);
                 System.out.println("Result of addition:");
-                result.print();
+                t.print();
             } else {
                 System.out.println("Tensor name not recognized");
             }
@@ -268,15 +263,15 @@ public class TensorOp {
 
     private static void subtractTensors(String command) {
         try {
-            String[] parts = command.substring(4, command.length()).split(" ");
-            String tensorName1 = parts[0].trim();
-            String tensorName2 = parts[1].trim();
-            Tensor tensor1 = readTensorFromFile(tensorName1);
-            Tensor tensor2 = readTensorFromFile(tensorName2);
-            if (tensor1 != null && tensor2 != null) {
-                Tensor result = Tensor.subtract(tensor1, tensor2);
+            String[] s = command.substring(4, command.length()).split(" ");
+            String ten1 = s[0].trim();
+            String ten2 = s[1].trim();
+            Tensor t1 = readTensorFromFile(ten1);
+            Tensor t2 = readTensorFromFile(ten2);
+            if (t1 != null && t2 != null) {
+                Tensor t = Tensor.subtract(t1, t2);
                 System.out.println("Result of subtraction:");
-                result.print();
+                t.print();
             } else {
                 System.out.println("One or both tensor names are not recognized");
             }
@@ -287,13 +282,13 @@ public class TensorOp {
     }
     private static void dotTensors(String command) {
         try {
-            String[] parts = command.substring(4, command.length()).split(" ");
-            String tensorName1 = parts[0].trim();
-            String tensorName2 = parts[1].trim();
-            Tensor tensor1 = readTensorFromFile(tensorName1);
-            Tensor tensor2 = readTensorFromFile(tensorName2);
-            if (tensor1 != null && tensor2 != null) {
-                Tensor.dotProduct(tensor1, tensor2);
+            String[] s = command.substring(4, command.length()).split(" ");
+            String ten1 = s[0].trim();
+            String ten2 = s[1].trim();
+            Tensor t1 = readTensorFromFile(ten1);
+            Tensor t2 = readTensorFromFile(ten2);
+            if (t1 != null && t2 != null) {
+                Tensor.dotProduct(t1, t2);
             } else {
                 System.out.println("One or both tensor names are not recognized");
             }
@@ -305,15 +300,15 @@ public class TensorOp {
     
     private static void scalarSubtraction(String command) {
         try {
-            String[] parts = command.substring(5, command.length() ).split(" ");
-            String tensorName1 = parts[0].trim();
-            String scalar = parts[1].trim();
-            Tensor tensor1 = readTensorFromFile(tensorName1);
-            double s = Double.parseDouble(scalar);
-            if (tensor1 != null) {
-                Tensor result = Tensor.scalarSub(tensor1, s);
+            String[] s = command.substring(5, command.length() ).split(" ");
+            String ten1 = s[0].trim();
+            String a = s[1].trim();
+            Tensor t1 = readTensorFromFile(ten1);
+            double s1 = Double.parseDouble(a);
+            if (t1 != null) {
+                Tensor t = Tensor.scalarSub(t1, s1);
                 System.out.println("Result of scalar subtraction:");
-                result.print();
+                t.print();
             } else {
                 System.out.println("Tensor name not recognized");
             }
@@ -325,15 +320,15 @@ public class TensorOp {
 
     private static void multiplyTensors(String command) {
         try {
-            String[] parts = command.substring(4, command.length()).split(" ");
-            String tensorName1 = parts[0].trim();
-            String tensorName2 = parts[1].trim();
-            Tensor tensor1 = readTensorFromFile(tensorName1);
-            Tensor tensor2 = readTensorFromFile(tensorName2);
-            if (tensor1 != null && tensor2 != null) {
-                Tensor result = Tensor.multiply(tensor1, tensor2);
+            String[] s = command.substring(4, command.length()).split(" ");
+            String ten1 = s[0].trim();
+            String ten2 = s[1].trim();
+            Tensor t1 = readTensorFromFile(ten1);
+            Tensor t2 = readTensorFromFile(ten2);
+            if (t1 != null && t2 != null) {
+                Tensor t = Tensor.multiply(t1, t2);
                 System.out.println("Result of multiplication:");
-                result.print();
+                t.print();
             } else {
                 System.out.println("One or both tensor names are not recognized");
             }
@@ -344,15 +339,15 @@ public class TensorOp {
     }
     private static void scalarMultiplication(String command) {
         try {
-            String[] parts = command.substring(5, command.length()).split(" ");
-            String tensorName1 = parts[0].trim();
-            String scalar = parts[1].trim();
-            Tensor tensor1 = readTensorFromFile(tensorName1);
-            double s = Double.parseDouble(scalar);
-            if (tensor1 != null) {
-                Tensor result = Tensor.scalarMul(tensor1, s);
+            String[] s = command.substring(5, command.length()).split(" ");
+            String ten1 = s[0].trim();
+            String a = s[1].trim();
+            Tensor t1 = readTensorFromFile(ten1);
+            double s1 = Double.parseDouble(a);
+            if (t1 != null) {
+                Tensor t = Tensor.scalarMul(t1, s1);
                 System.out.println("Result of addition:");
-                result.print();
+                t.print();
             } else {
                 System.out.println("Tensor name not recognized");
             }
@@ -364,15 +359,15 @@ public class TensorOp {
 
     private static void divideTensors(String command) {
         try {
-            String[] parts = command.substring(4, command.length()).split(" ");
-            String tensorName1 = parts[0].trim();
-            String tensorName2 = parts[1].trim();
-            Tensor tensor1 = readTensorFromFile(tensorName1);
-            Tensor tensor2 = readTensorFromFile(tensorName2);
-            if (tensor1 != null && tensor2 != null) {
-                Tensor result = Tensor.divide(tensor1, tensor2);
+            String[] s = command.substring(4, command.length()).split(" ");
+            String ten1 = s[0].trim();
+            String ten2 = s[1].trim();
+            Tensor t1 = readTensorFromFile(ten1);
+            Tensor t2 = readTensorFromFile(ten2);
+            if (t1 != null && t2 != null) {
+                Tensor t = Tensor.divide(t1, t2);
                 System.out.println("Result of division:");
-                result.print();
+                t.print();
             } else {
                 System.out.println("One or both tensor names are not recognized");
             }
@@ -383,15 +378,15 @@ public class TensorOp {
     }
     private static void scalarDivision(String command) {
         try {
-            String[] parts = command.substring(5, command.length()).split(" ");
-            String tensorName1 = parts[0].trim();
-            String scalar = parts[1].trim();
-            Tensor tensor1 = readTensorFromFile(tensorName1);
-            double s = Double.parseDouble(scalar);
-            if (tensor1 != null) {
-                Tensor result = Tensor.scalarDiv(tensor1, s);
+            String[] s = command.substring(5, command.length()).split(" ");
+            String ten1 = s[0].trim();
+            String a = s[1].trim();
+            Tensor t1 = readTensorFromFile(ten1);
+            double s1 = Double.parseDouble(a);
+            if (t1 != null) {
+                Tensor t = Tensor.scalarDiv(t1, s1);
                 System.out.println("Result of division:");
-                result.print();
+                t.print();
             } else {
                 System.out.println("Tensor name not recognized");
             }
@@ -402,7 +397,7 @@ public class TensorOp {
     }
 
     private static void writeTensorToFile(String tensorName, Tensor tensor) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filepath, true))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(path, true))) {
             bw.write(tensorName + "=" + tensor.toString());
             bw.newLine();
         } catch (IOException e) {
@@ -411,29 +406,29 @@ public class TensorOp {
         }
     }
     private static void printHelp(String command) {
-    	String[] parts=command.split(" ",2);
-    	if(parts.length>=2) {
-    	String helpName=parts[1].trim();
+    	String[] s=command.split(" ",2);
+    	if(s.length>=2) {
+    	String helpName=s[1].trim();
     	String line = readHelpFromFile(helpName);
     	if(line!=null) {
     		System.out.println(line);
     	}
 
     	else {
-    		System.out.println(ANSI_GREEN+"Create tensor---- name= [ a00 a01 a02....a0n ,..., an0 an1 an2 ann..;...;b00 b01 b02....b0n ,..., bn0 bn1 bn2 bnn..]"+ANSI_RESET);
+    		System.out.println(GREEN+"Create tensor---- name= [ a00 a01 a02....a0n ,..., an0 an1 an2 ann..;...;b00 b01 b02....b0n ,..., bn0 bn1 bn2 bnn..]"+RESET);
     		System.out.println("b=[1 2 3, 2 3 1; 1 1 1, 2 2 2] \n'Write your desired numbers'");
-    		System.out.println(ANSI_RED+"Type help and any of the following:\ncreate, add, mul, div, scalar add, scalar div, scalar add,\ntranspose, stride, dimension, slice, dot"+ANSI_RESET);
+    		System.out.println(RED+"Type help and any of the following:\ncreate, add, mul, div, scalar add, scalar div, scalar add,\ntranspose, stride, dimension, slice, dot"+RESET);
         	}
     	
     }
     	else {
-    		System.out.println(ANSI_GREEN+"Create tensor---- name= [ a00 a01 a02....a0n ,..., an0 an1 an2 ann..;...;b00 b01 b02....b0n ,..., bn0 bn1 bn2 bnn..]"+ANSI_RESET);
+    		System.out.println(GREEN+"Create tensor---- name= [ a00 a01 a02....a0n ,..., an0 an1 an2 ann..;...;b00 b01 b02....b0n ,..., bn0 bn1 bn2 bnn..]"+RESET);
     		System.out.println("b=[1 2 3, 2 3 1; 1 1 1, 2 2 2] \n'Write your desired numbers'");
-    		System.out.println(ANSI_RED+"Type help and any of the following:\ncreate, add, mul, div, scalar add, scalar div, scalar add,\ntranspose, stride, dimension, slice, dot"+ANSI_RESET);
+    		System.out.println(RED+"Type help and any of the following:\ncreate, add, mul, div, scalar add, scalar div, scalar add,\ntranspose, stride, dimension, slice, dot"+RESET);
         	}
    }
     private static Tensor readTensorFromFile(String tensorName) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.startsWith(tensorName + "=")) {
@@ -444,13 +439,12 @@ public class TensorOp {
         } catch (IOException e) {
             System.err.println("IOException occurred while reading tensor from file: " + e.getMessage());
             System.out.println("Try again!");
-            e.printStackTrace();
         }
         return null;
     }
     
-    public static void clearFile(String filepath) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filepath))) {
+    public static void clearFile(String path) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(path))) {
             bw.write("");
             System.out.println("Thank you for choosing MatrixIT :)");
             System.out.println("Enter your choice again or exit to quit:");

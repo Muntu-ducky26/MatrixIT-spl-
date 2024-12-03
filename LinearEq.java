@@ -2,29 +2,29 @@ package linear;
 import java.util.Scanner;
 public class LinearEq {
 	public static void executeCommand(String command,Scanner scanner) {
-        if (command.startsWith("bis")) {
+        if(command.startsWith("bis")){
             calculateBisection(command,scanner);
         }
-        else if (command.startsWith("gjor")) {
+        else if(command.startsWith("gjor")){
         	calculateGaussjordan(command,scanner);
         }
-        else if (command.startsWith("gsei")) {
+        else if(command.startsWith("gsei")){
         	calculateGaussseidel(command,scanner);
         } 
-        else if (command.startsWith("fp")) {
+        else if(command.startsWith("fp")){
         	calculateFalseposition(command,scanner);
         }
-        else if (command.startsWith("NR")) {
+        else if(command.startsWith("NR")){
         	calculateNewtonrhapson(command,scanner);
         }
-        else if (command.startsWith("scnt") ) {
+        else if(command.startsWith("scnt") ){
         	calculateSecant(command,scanner);
         }
-        else if (command.startsWith("help")) {
+        else if(command.startsWith("help")){
         	printHelp(command);
         }
-        else {
-            System.out.println("Unknown command: " + command);
+        else{
+            System.out.println("Unknown command: Type help for assistance!" + command);
         }
     }
 
@@ -94,7 +94,7 @@ private static void printHelp(String command) {
     System.out.println("Gauss-Seidel method = gsei");
     System.out.println("False Position method = fp");
     System.out.println("Newton-Raphson method = NR");
-    System.out.println("Secant method = scnt()");
+    System.out.println("Secant method = scnt");
     }
 
 }

@@ -2,203 +2,173 @@ package matrix;
 
 public class Matrix {
     double[][] data;
-    int rows, cols;
-
-    public static final String ANSI_RESET = "\u001B[0m";
-	public static final String ANSI_RED  = "\u001B[31m";
-	public static final String ANSI_BLUE  = "\u001B[34m";
-	public static final String ANSI_GREEN  = "\u001B[32m";
+    int r, c;
+    public static final String RESET = "\u001B[0m";
+	public static final String RED  = "\u001B[31m";
+	public static final String BLUE  = "\u001B[34m";
+	public static final String GREEN  = "\u001B[32m";
     
-    public Matrix(int rows, int cols) {
-        this.rows = rows;
-        this.cols = cols;
-        this.data = new double[rows][cols];
+    public Matrix(int r, int c) {
+        this.r = r;
+        this.c = c;
+        this.data = new double[r][c];
     }
     public Matrix(double[][] data) {
         this.data = data;
-        this.rows = data.length;
-        this.cols = data[0].length;
+        this.r = data.length;
+        this.c = data[0].length;
     }
-
     public void setData(double[][] data) {
         this.data = data;
     }
-
     public double[][] getData() {
         return this.data;
     }
-
     public static Matrix multiply(Matrix A, Matrix B) {
-        if (A.cols != B.rows) {
+        if (A.c != B.r) {
             throw new IllegalArgumentException("Matrix dimensions do not match for multiplication.");
         }
-        Matrix result = new Matrix(A.rows, B.cols);
-        for (int i = 0; i < A.rows; i++) {
-            for (int j = 0; j < B.cols; j++) {
-                result.data[i][j] = 0;
+        Matrix arr = new Matrix(A.r, B.c);
+        for (int i = 0; i < A.r; i++) {
+            for (int j = 0; j < B.c; j++) {
+                arr.data[i][j] = 0;
                 System.out.println("Value of a"+i+j+" ---");
-                for (int k = 0; k < A.cols; k++) {
-                    result.data[i][j] += A.data[i][k] * B.data[k][j];
+                for (int k = 0; k < A.c; k++) {
+                    arr.data[i][j] += A.data[i][k] * B.data[k][j];
                     System.out.print("("+A.data[i][k] +" * "+ B.data[k][j]+")");
-                    if(k==A.cols-1) {
+                    if(k==A.c-1) {
                     	System.out.println();
-                    	System.out.println("= "+result.data[i][j]);
+                    	System.out.println("= "+arr.data[i][j]);
                     	break;
                     }
                     System.out.print("+");
                 }
             }
         }
-        return result;
+        return arr;
     }
-    public static double sparseMatrix(Matrix A) {
-        
-        int total = A.rows * A.cols;
-        int Count = 0;
-
-        
-        for (int i = 0; i < A.rows; i++) {
-            for (int j = 0; j < A.cols; j++) {
+    public static double sparseMatrix(Matrix A){
+        int total = A.r * A.c;
+        int flag = 0;
+        for (int i = 0; i < A.r; i++) {
+            for (int j = 0; j < A.c; j++) {
                 if (A.data[i][j] == 0.0) {
-                    Count++; //counting zeros
+                    flag++;
                 }
             }
         }
         System.out.println("Total number of elements in matrix: "+ total);
-        System.out.println("Total number of elements are zero : "+ Count);
+        System.out.println("Total number of elements are zero : "+ flag);
         System.out.println();
         System.out.println("Sparsity :");
-        System.out.println("= ("+ Count + "\\" + total + "  *100 %");
-
-        
-        double sparsity = (double) Count / total;
+        System.out.println("= ("+ flag + "\\" + total + "  *100 %");
+        double sparsity = (double) flag / total;
         return sparsity;
     }
-    
-    public static Matrix extractMatrix(Matrix matrix, int numRows, int numCols, int startRow, int startCol) {
-        if (startRow + numRows > matrix.rows || startCol + numCols > matrix.cols) {
-            throw new IllegalArgumentException(ANSI_RED+"Submatrix dimensions exceed original matrix dimensions."+ANSI_RESET);
+    public static Matrix extractMatrix(Matrix m, int numR, int numC, int startRow, int startCol) {
+        if (startRow + numR > m.r || startCol + numC > m.c) {
+            throw new IllegalArgumentException(RED+"Submatrix dimensions exceed original matrix dimensions."+RESET);
         }
-
-        Matrix subMatrix = new Matrix(numRows, numCols);
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numCols; j++) {
-                subMatrix.data[i][j] = matrix.data[startRow + i][startCol + j];
+        Matrix sub=new Matrix(numR, numC);
+        for (int i=0; i<numR; i++) {
+            for (int j = 0; j < numC; j++) {
+                sub.data[i][j] = m.data[startRow + i][startCol + j];
             }
         }
-        return subMatrix;
-    }
-    public static Matrix subMatrices(Matrix matrix1, Matrix matrix2) {
-    	if(matrix1.rows!=matrix2.rows || matrix2.cols!=matrix1.cols) {
-    		throw new IllegalArgumentException(ANSI_RED+"Dimensions doesn't match!"+ANSI_RESET);
-    	}
-    	
-        Matrix sub = new Matrix(matrix1.rows,matrix1.cols);
-        for (int i = 0; i < matrix1.rows; i++) {
-            for (int j = 0; j < matrix1.cols; j++) {
-                sub.data[i][j] = matrix1.data[i][j] - matrix2.data[i][j];
-                System.out.print("|a"+i+j+" = " + matrix1.data[i][j] +" - " + matrix2.data[i][j]+" |");
-            }
-            System.out.println();
-        }
-  
         return sub;
     }
-    
-    public static Matrix addMatrices(Matrix matrix1, Matrix matrix2) {
-    	if(matrix1.rows!=matrix2.rows || matrix2.cols!=matrix1.cols) {
-    		throw new IllegalArgumentException(ANSI_RED+"Dimensions doesn't match!"+ANSI_RESET);
+    public static Matrix subMatrices(Matrix m1, Matrix m2) {
+    	if(m1.r!=m2.r || m2.c!=m1.c) {
+    		throw new IllegalArgumentException(RED+"Dimensions doesn't match!"+RESET);
     	}
-    	
-        Matrix add = new Matrix(matrix1.rows,matrix1.cols);
-        for (int i = 0; i < matrix1.rows; i++) {
-            for (int j = 0; j < matrix1.cols; j++) {
-                add.data[i][j] = matrix1.data[i][j] + matrix2.data[i][j];
-                System.out.print("|a"+i+j+" = " + matrix1.data[i][j] +" + " + matrix2.data[i][j]+" |");
+        Matrix sub = new Matrix(m1.r,m1.c);
+        for (int i = 0; i < m1.r; i++) {
+            for (int j = 0; j < m1.c; j++) {
+                sub.data[i][j] = m1.data[i][j] - m2.data[i][j];
+                System.out.print("|a"+i+j+" = " + m1.data[i][j] +" - " + m2.data[i][j]+" |");
+            }
+            System.out.println();}  
+        return sub;
+    } 
+    public static Matrix addMatrices(Matrix m1, Matrix m2){
+    	if(m1.r!=m2.r || m2.c!=m1.c){
+    		throw new IllegalArgumentException(RED+"Dimensions doesn't match!"+RESET);
+    	}   	
+        Matrix add = new Matrix(m1.r,m1.c);
+        for (int i = 0; i < m1.r; i++){
+            for (int j = 0; j < m1.c; j++) {
+                add.data[i][j] = m1.data[i][j] + m2.data[i][j];
+                System.out.print("|a"+i+j+" = " + m1.data[i][j] +" + " + m2.data[i][j]+" |");
             }
             System.out.println();
         }
-  
         return add;
     }
-    public static Matrix invert(Matrix matrix) {
-        int n = matrix.rows;
-        Matrix inverse = new Matrix(n,n);
-        double det = determinant(matrix);
-        if (det == 0) {
-            throw new ArithmeticException(ANSI_RED+"Matrix is singular and cannot be inverted."+ANSI_RESET);//singular matrix have determinant zero and we can't divide by zero
-        }
-     
-        Matrix minors = matrixOfMinors(matrix);
-        
-        for (int i = 0; i < minors.rows; i++) {
-            for (int j = 0; j < minors.cols; j++) {
-                System.out.println("Minor of a"+i+j+" ="+minors.data[i][j]);//printing minors
+    public static Matrix invert(Matrix m) {
+        int n=m.r;
+        Matrix inv=new Matrix(n,n);
+        double det=determinant(m);
+        if (det == 0){
+            throw new ArithmeticException(RED+"Matrix is singular and cannot be inverted."+RESET);//singular matrix have determinant zero and we can't divide by zero
+        }   
+        Matrix minOfmat=matrixOfMinors(m);    
+        for (int i = 0; i < minOfmat.r; i++){
+            for (int j = 0; j < minOfmat.c; j++){
+                System.out.println("Minor of a"+i+j+" ="+minOfmat.data[i][j]);//printing minors
             }
          System.out.println();    
         }
-        Matrix cofactors = matrixOfCofactors(minors);//calling the method
+        Matrix cofactorMatrix=matrixOfCofactors(minOfmat);
         System.out.println("The matrix consisting cofactors are:");
-        for (int a = 0; a < cofactors.rows; a++) {
-            for (int j = 0; j < cofactors.cols; j++) {
-            	System.out.println("Cofactors of a"+a+j+" ="+cofactors.data[a][j]);
+        for (int a = 0; a < cofactorMatrix.r; a++){
+            for (int j = 0; j < cofactorMatrix.c; j++){
+            	System.out.println("Cofactors of a"+a+j+" ="+cofactorMatrix.data[a][j]);
             }
          System.out.println();  
         }
-
-        // Find the adjacent matrix (transpose of the cofactor matrix)
-        Matrix adjacent = transpose(cofactors);
+        Matrix adj = transpose(cofactorMatrix);
         System.out.println("The adjacent matrix will be :");
-        for (int k = 0; k < adjacent.rows; k++) {
-            for (int j = 0; j < adjacent.cols; j++) {
-            	System.out.println("Adjacent entries of a"+k+j+" ="+adjacent.data[k][j]);//printing adjacents
+        for (int k = 0; k < adj.r; k++){
+            for (int j = 0; j < adj.c; j++){
+            	System.out.println("Adjacent entries of a"+k+j+" ="+adj.data[k][j]);//printing adjacents
             }
-            System.out.println();     
-        }
-
-        // Divide each element of the adjacent matrix by the determinant
-        for (int b = 0; b < n; b++) {
-            for (int j = 0; j < n; j++) {
-                inverse.data[b][j] = adjacent.data[b][j] / det;
-            }
-        }
-        
-        return inverse;
-        
+            System.out.println();}
+        for (int b=0; b<n; b++){
+            for (int j =0; j<n; j++){
+                inv.data[b][j] = adj.data[b][j]/det;
+            }}
+        return inv;
     }
-    public static double determinant(Matrix matrix) {
-        int n=matrix.rows;
-        if (n == 1) {
-            return matrix.data[0][0];//single element 
+    public static double determinant(Matrix m) {
+        int n=m.r;
+        if(n==1){
+            return m.data[0][0];//single element 
         }
-        if (n == 2) {
-        	System.out.println("(("+matrix.data[0][0] +" X "+ matrix.data[1][1] +") - ("+ matrix.data[0][1] +" X "+matrix.data[1][0]+"))");
-            return matrix.data[0][0] * matrix.data[1][1] - matrix.data[0][1] * matrix.data[1][0];//cross mul for 4 element and then div
+        if(n==2){
+        	System.out.println("(("+m.data[0][0] +" X "+ m.data[1][1] +") - ("+ m.data[0][1] +" X "+m.data[1][0]+"))");
+            return m.data[0][0] * m.data[1][1] - m.data[0][1] * m.data[1][0];//cross mul for 4 element and then div
         }
         double det = 0;
         for (int i = 0; i < n; i++) {
         	System.out.println("For index "+ i+1 );
-        	System.out.println("( -1^"+i +" X "+ matrix.data[0][i] +" X "+determinant(minor(matrix, 0, i))+") + ");
-            det += Math.pow(-1, i) * matrix.data[0][i] * determinant(minor(matrix, 0, i));
-            
-        }
+        	System.out.println("( -1^"+i +" X "+ m.data[0][i]+" X "+determinant(minOfMat(m, 0, i))+") + ");
+            det += Math.pow(-1, i)*m.data[0][i]*determinant(minOfMat(m, 0, i));
+            }
         System.out.println("Determinant is: "+det);
         return det;
     }
-    public static Matrix transpose(Matrix matrix) {
-        int n1 = matrix.rows;
-        int n2= matrix.cols;
-        Matrix transposed = new Matrix(n2,n1);
-        for (int i = 0; i < n1; i++) {
-            for (int j = 0; j < n2; j++) {
-                transposed.data[j][i] = matrix.data[i][j];//exchanging rows and columns
-            }
+    public static Matrix transpose(Matrix m){
+        int n1 = m.r;
+        int n2= m.c;
+        Matrix trans=new Matrix(n2,n1);
+        for (int i=0; i<n1; i++) {
+            for (int j=0; j<n2; j++){
+                trans.data[j][i] = m.data[i][j];
+            }}
+        return trans;
         }
-        return transposed;
-    }
-    // Method to calculate the minor matrix by removing one row and one column
-    public static Matrix minor(Matrix matrix, int row, int col) {
-        int n = matrix.rows;
+    public static Matrix minOfMat(Matrix m, int row, int col) {
+        int n = m.r;
         Matrix minor = new Matrix(n - 1,n - 1);
         int r = -1;
         for (int i = 0; i < n; i++) { //i=row maintain
@@ -207,23 +177,23 @@ public class Matrix {
             int c = -1;
             for (int j = 0; j < n; j++) { //j=column
                 if (j == col) continue; //column equal then avoid
-                minor.data[r][++c] = matrix.data[i][j];
+                minor.data[r][++c] = m.data[i][j];
             }
         }
         return minor;
-    }
-    public static Matrix matrixOfMinors(Matrix matrix) {
-        int n = matrix.rows;
+        }
+    public static Matrix matrixOfMinors(Matrix m) {
+        int n = m.r;
         Matrix minors = new Matrix(n,n);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                minors.data[i][j] = determinant(minor(matrix, i, j));
+                minors.data[i][j] = determinant(minOfMat(m, i, j));
             }
         }
         return minors;
-    }
+        }
     public static Matrix matrixOfCofactors(Matrix minors) {
-        int n = minors.rows;
+        int n = minors.r;
         Matrix cofactors = new Matrix(n,n);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -231,39 +201,34 @@ public class Matrix {
             }
         }
         return cofactors;
-    }
-    
-    
-    public static int rank(Matrix matrix) {
+        }
+    public static int rank(Matrix m) {
     	System.out.println("Calculating rank of the matrix...");
-        Matrix echelonMatrix = toRowEchelonForm(matrix);
+        Matrix reMat = toRowEchelonForm(m);
         int rank = 0;
-        for (int i = 0; i < echelonMatrix.rows; i++) {
+        for (int i = 0; i < reMat.r; i++) {
             boolean nonZeroRow = false;
-            for (int j = 0; j < echelonMatrix.cols; j++) {
-                if (echelonMatrix.data[i][j] != 0) {
+            for (int j = 0; j < reMat.c; j++) {
+                if (reMat.data[i][j] != 0) {
                     nonZeroRow = true;
                     break;
                 }
             }
             if (nonZeroRow) {
                 rank++;
-            }
-        }
+            }}
         System.out.println("Row echelon form of the matrix:");
-        echelonMatrix.print();
+        reMat.print();
         System.out.println("Rank of the matrix: " + rank);
         return rank;
     }
-    public static Matrix toRowEchelonForm(Matrix matrix) {
+    public static Matrix toRowEchelonForm(Matrix m) {
     	System.out.println("Converting matrix to row echelon form...");
-        int rows = matrix.rows;
-        int cols = matrix.cols;
-        Matrix echelonMatrix = new Matrix(rows, cols);
-
-        // Copy the original matrix to avoid modifying it
+        int rows = m.r;
+        int cols = m.c;
+        Matrix rowechMat = new Matrix(rows, cols);
         for (int i = 0; i < rows; i++) {
-            System.arraycopy(matrix.data[i], 0, echelonMatrix.data[i], 0, cols);
+            System.arraycopy(m.data[i], 0, rowechMat.data[i], 0, cols);
         }
 
         int lead = 0;
@@ -272,7 +237,7 @@ public class Matrix {
                 break;
             }
             int i = r;
-            while (echelonMatrix.data[i][lead] == 0) {
+            while (rowechMat.data[i][lead] == 0) {
                 i++;
                 if (i == rows) {
                     i = r;
@@ -283,64 +248,58 @@ public class Matrix {
                     }
                 }
             }
-            if (i != r) {
+            if(i!=r){
                 System.out.println("Swapping rows " + (i + 1) + " and " + (r + 1));
-                swapRows(echelonMatrix, i, r);
-                echelonMatrix.print();
+                swapRows(rowechMat,i,r);
+                rowechMat.print();
             }
-            if (echelonMatrix.data[r][lead] != 0) {
-                double lv = echelonMatrix.data[r][lead];
+            if(rowechMat.data[r][lead] != 0) {
+                double lv = rowechMat.data[r][lead];
                 System.out.println("Normalizing row " + (r + 1) + " by dividing by " + lv);
                 for (int j = 0; j < cols; j++) {
-                    echelonMatrix.data[r][j] /= lv;
+                    rowechMat.data[r][j] /= lv;
                 }
             }
             for (int i2 = 0; i2 < rows; i2++) {
                 if (i2 != r) {
-                    double lv = echelonMatrix.data[i2][lead];
+                    double lv = rowechMat.data[i2][lead];
                     System.out.println("Eliminating element at row " + (i2 + 1) + ", column " + (lead + 1));
                     for (int j = 0; j < cols; j++) {
-                        echelonMatrix.data[i2][j] -= lv * echelonMatrix.data[r][j];
+                        rowechMat.data[i2][j] -= lv * rowechMat.data[r][j];
                     }
                 }
             }
             lead++;
         }
-        return echelonMatrix;
-    }
-
-    // Method to swap two rows in a matrix
-    private static void swapRows(Matrix matrix, int row1, int row2) {
-    	System.out.println("Swapping rows: " + (row1 + 1) + " and " + (row2 + 1));
-        double[] temp = matrix.data[row1];
-        matrix.data[row1] = matrix.data[row2];
-        matrix.data[row2] = temp;
-    }
-
-    
-    
-    public static double[] matrixVectorMultiply(Matrix matrix, double[] vector) {
-    	System.out.println("Performing matrix-vector multiplication...");
-        int n = matrix.rows;
-        double[] result = new double[n];
-        for (int i = 0; i < n; i++) {
-            result[i] = 0;
-            for (int j = 0; j < n; j++) {
-            	System.out.printf("Adding %f * %f\n", matrix.data[i][j], vector[j]);
-                result[i] += matrix.data[i][j] * vector[j];
-            }
-            System.out.printf("Row %d result: %f\n", i + 1, result[i]);
+        return rowechMat;
         }
-        return result;
+    private static void swapRows(Matrix m, int row1, int row2) {
+    	System.out.println("Swapping rows: "+(row1+1) +" and "+(row2+1));
+        double[] temp=m.data[row1];
+        m.data[row1]=m.data[row2];
+        m.data[row2]=temp;
+    }       
+    public static double[] matrixVectorMultiply(Matrix m, double[] vec) {
+    	System.out.println("Performing matrix-vector multiplication...");
+        int n = m.r;
+        double[] arr = new double[n];
+        for (int i = 0; i < n; i++) {
+            arr[i] = 0;
+            for (int j = 0; j < n; j++) {
+            	System.out.printf("Adding %f * %f\n", m.data[i][j], vec[j]);
+                arr[i] += m.data[i][j] * vec[j];
+            }
+            System.out.printf("Row %d result: %f\n", i + 1, arr[i]);
+        }
+        return arr;
     }
-    public static double vectorNorm(double[] vector) {
+    public static double vectorNorm(double[] vec) {
     	System.out.println("Calculating vector norm...");
         double sum = 0;
-        for (double v : vector) {
+        for (double v:vec){
         	System.out.printf("Adding square of %f\n", v);
-            sum += v * v;
-        }
-        double norm = Math.sqrt(sum);
+            sum += v*v;}
+        double norm=Math.sqrt(sum);
         System.out.printf("Norm of the vector: %f\n", norm);
         return norm;
     }
@@ -355,68 +314,64 @@ public class Matrix {
         }
         return normalizedVector;
     }
-    public static double powerIteration(Matrix matrix, double[] initialVector, int maxIterations, double tolerance) {
-        System.out.println("Performing power iteration to calculate the dominant eigenvalue...");
-        double[] b = initialVector;
-        double eigenvalue = 0;
+    public static double powerIteration(Matrix m, double[] vecI, int maxIterations, double tolerance) {
+        System.out.println("Performing power iteration to calculate the dominant eigenvalue\n");
+        double[] b=vecI;
+        double egVal = 0;
 
-        for (int i = 0; i < maxIterations; i++) {
+        for (int i = 0; i<maxIterations; i++) {
             System.out.println("Iteration " + (i + 1) + ":");
-            double[] bNext = matrixVectorMultiply(matrix, b);
-            bNext = normalizeVector(bNext);
+            double[] b2 = matrixVectorMultiply(m, b);
+            b2 = normalizeVector(b2);
 
-            double newEigenvalue = 0;
-            for (int j = 0; j < matrix.rows; j++) {
-                newEigenvalue += bNext[j] * matrixVectorMultiply(matrix, bNext)[j];
+            double egVal2 = 0;
+            for (int j = 0; j < m.r; j++) {
+                egVal2 += b2[j]*matrixVectorMultiply(m, b2)[j];
             }
 
-            System.out.printf("Calculated eigenvalue: %f\n", newEigenvalue);
-            if (Math.abs(newEigenvalue - eigenvalue) < tolerance) {
-                System.out.println("Convergence achieved.");
-                eigenvalue = newEigenvalue;
+            System.out.printf("Calculated eigenvalue: %f\n", egVal2);
+            if (Math.abs(egVal2 - egVal) < tolerance) {
+                System.out.println("Desired Convergence achieved");
+                egVal=egVal2;
                 break;
             }
-
-            eigenvalue = newEigenvalue;
-            b = bNext;
+            egVal = egVal2;
+            b = b2;
         }
 
-        System.out.printf("Dominant eigenvalue: %f\n", eigenvalue);
-        return eigenvalue;
-    }
-    
-    
+        System.out.printf("Dominant eigenvalue: %f\n", egVal);
+        return egVal;
+    }   
     public void print() {
-        for (double[] row : data) {
-            for (double elem : row) {
-                System.out.print(elem + " ");
+        for (int i=0; i<data.length; i++) {
+            for (int j=0; j<data[i].length; j++) {
+                System.out.print(data[i][j] + " ");
             }
             System.out.println();
         }
     }
-    public static Matrix fromString(String matrixData) {
-        String[] rows = matrixData.split(";");
-        int rowCount = rows.length;
-        int colCount = rows[0].trim().split("\\s+").length;
-        Matrix matrix = new Matrix(rowCount, colCount);
-        for (int i = 0; i < rowCount; i++) {
-            String[] elements = rows[i].trim().split("\\s+");
-            for (int j = 0; j < colCount; j++) {
-                matrix.data[i][j] = Double.parseDouble(elements[j]);
+    public static Matrix fromString(String mData) {
+        String[] r=mData.split(";");
+        int numR=r.length;
+        int numC=r[0].trim().split("\\s+").length;
+        Matrix m=new Matrix(numR, numC);
+        for (int i = 0; i < numR; i++) {
+            String[] data = r[i].trim().split("\\s+");
+            for (int j = 0; j < numC; j++) {
+                m.data[i][j]=Double.parseDouble(data[j]);
             }
         }
-        return matrix;
+        return m;
     }
-
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (double[] row : data) {
-            for (double elem : row) {
-                sb.append(elem).append(" ");
+        StringBuilder sb=new StringBuilder();
+        for (int i=0; i<data.length; i++) {
+            for (int j=0; j<data[i].length; j++) {
+                sb.append(data[i][j]).append(" ");
             }
             sb.append(";");
         }
         return sb.toString().trim();
     }
+
 }
